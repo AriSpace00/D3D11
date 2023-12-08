@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\Default">
+      <UniqueIdentifier>{6d98bc1c-c499-4750-9d57-54be05e1c10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model">
+      <UniqueIdentifier>{07fc9b93-67da-4702-8cbe-568627aa60ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\Mesh">
+      <UniqueIdentifier>{e87fec41-4737-470d-84ae-9ec5d46a8fb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\Material">
+      <UniqueIdentifier>{0c0f2832-4cbd-4bda-bcaf-bad02d97949f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\Animation">
+      <UniqueIdentifier>{280a24c0-3594-4e4e-a9e3-1cf7ce8649b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\Mesh\Node">
+      <UniqueIdentifier>{8c8bc30e-d08d-4047-a3fe-81a1d1ce9826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\Mesh\Bone">
+      <UniqueIdentifier>{ffda224b-5b44-49c4-be1a-d4bee705e65b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>소스 파일\Default</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>소스 파일\Default</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
