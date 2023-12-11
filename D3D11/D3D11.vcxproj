@@ -141,12 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DemoApp.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ImGUI.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="DemoApp.cpp" />
+    <ClCompile Include="ImGUI.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>

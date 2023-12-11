@@ -9,30 +9,33 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Renderer">
-      <UniqueIdentifier>{7244aad7-6bc2-4c5f-9575-8fc54fd506d0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\ImGUI">
       <UniqueIdentifier>{b2ae83c7-7c66-4907-8bd2-df58cb5afa50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Renderer.h">
-      <Filter>소스 파일\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DemoApp.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI.h">
+      <Filter>소스 파일\ImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>소스 파일\Renderer</Filter>
+    <ClCompile Include="DemoApp.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI.cpp">
+      <Filter>소스 파일\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

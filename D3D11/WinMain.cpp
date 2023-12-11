@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "Renderer.h"
+#include "DemoApp.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -9,9 +9,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    /*Renderer renderer(hInstance);
-    if (!renderer.Initialize(1920, 1080))
+    DemoApp demoApp(hInstance);
+    if (!demoApp.Initialize(1920, 1080))
         return -1;
 
-    return renderer.Run();*/
+    return demoApp.Run();
 }
