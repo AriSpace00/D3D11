@@ -12,6 +12,9 @@
     <Filter Include="소스 파일\ImGUI">
       <UniqueIdentifier>{b2ae83c7-7c66-4907-8bd2-df58cb5afa50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{2cc43e07-d6e9-4872-9183-90ec5095c975}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -37,5 +40,18 @@
     <ClCompile Include="ImGUI.cpp">
       <Filter>소스 파일\ImGUI</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shared.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
