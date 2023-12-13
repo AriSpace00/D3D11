@@ -93,7 +93,7 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
     deviceContext->PSSetConstantBuffers(2, 1, &m_CBMaterial);
 
     // Mesh Render
-    for (int i = 0; i < m_Nodes.size(); i++)
+    for (int i = 0; i < /*m_Nodes.size()*/1; i++)
     {
         m_Nodes[i]->Render(deviceContext, this);
     }

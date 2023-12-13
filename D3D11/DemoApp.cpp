@@ -53,7 +53,8 @@ void DemoApp::Update()
     Matrix mSpin;
     Matrix mSpinX = XMMatrixRotationX(m_Roll);
     Matrix mSpinY = XMMatrixRotationY(m_Pitch);
-    mSpin = mSpinY * mSpinX;
+    Matrix mSpinZ = XMMatrixRotationZ(m_Yaw);
+    mSpin = mSpinX * mSpinY * mSpinZ;
 
     Matrix mScale = Matrix::CreateScale(m_MeshScale, m_MeshScale, m_MeshScale);
 
@@ -203,8 +204,9 @@ bool DemoApp::InitScene()
     std::string zelda = "../Resource/FBXLoad_Test/fbx/zeldaPosed001.fbx";
     std::string boneDummy = "../Resource/FBXLoad_Test/fbx/BoneDummyWithMaterial.fbx";
     std::string skinningFBX = "../Resource/FBXLoad_Test/fbx/SkinningTest.fbx";
+    std::string cerberus = "../Resource/FBXLoad_Test/fbx/cerberus2.fbx";
 
-    filePath = zelda;
+    filePath = cerberus;
 
     // Model 클래스로 FBX Load
     m_Model = new Model();
@@ -345,6 +347,9 @@ void DemoApp::RunImGUI()
         ImGui::Text("Y");
         ImGui::SameLine();
         ImGui::SliderFloat("##cy", &m_Pitch, 0.0f, 90.0f);
+        ImGui::Text("Z");
+        ImGui::SameLine();
+        ImGui::SliderFloat("##cz", &m_Yaw, 0.0f, 90.0f);
         ImGui::Text("Scale");
         ImGui::SameLine();
         ImGui::SliderFloat("##cs", &m_MeshScale, 0.0f, 100.0f);

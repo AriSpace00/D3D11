@@ -57,12 +57,12 @@ public:
     vector<Vertex> m_Vertices;
     vector<Bone*> m_Bones;
     vector<BoneVertexWeight> m_BoneWeightVertices;
-    vector<WORD> m_Indices;
+    vector<UINT> m_Indices;
 
 private:
     void CreateVertexBuffer(ID3D11Device* device, const vector<Vertex>& vertices, UINT vertexCount);
     void CreateBoneVertexWeightBuffer(ID3D11Device* device, const vector<BoneVertexWeight>& vertices, UINT vertexCount);
-    void CreateIndexBuffer(ID3D11Device* device, const vector<WORD>& indices, UINT indexCount);
+    void CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, UINT indexCount);
 
 public:
     void Create(ID3D11Device* device, aiMesh* mesh);

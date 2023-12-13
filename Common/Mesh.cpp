@@ -52,10 +52,10 @@ void Mesh::CreateBoneVertexWeightBuffer(ID3D11Device* device, const vector<BoneV
     m_VertexBufferOffset = 0;
 }
 
-void Mesh::CreateIndexBuffer(ID3D11Device* device, const vector<WORD>& indices, UINT indexCount)
+void Mesh::CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, UINT indexCount)
 {
     D3D11_BUFFER_DESC bd = {};
-    bd.ByteWidth = sizeof(WORD) * indexCount;
+    bd.ByteWidth = sizeof(UINT) * indexCount;
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.CPUAccessFlags = 0;

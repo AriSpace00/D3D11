@@ -66,6 +66,7 @@ public:
 
     float m_Roll = 0.0f;
     float m_Pitch = 0.0f;
+    float m_Yaw = 0.0f;
 
     float m_CameraFovYRadius;
     float m_CameraNear;

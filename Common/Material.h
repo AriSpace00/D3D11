@@ -20,6 +20,7 @@ public:
     ID3D11ShaderResourceView* m_SpecularRV = nullptr;       // ÅØ½ºÃ³ ½ºÆåÅ§·¯¸Ê ¸®¼Ò½º ºä
     ID3D11ShaderResourceView* m_EmissiveRV = nullptr;       // ÅØ½ºÃ³ ÀÌ¹Ì½Ãºê¸Ê ¸®¼Ò½º ºä
     ID3D11ShaderResourceView* m_OpacityRV = nullptr;        // ÅØ½ºÃ³ ¿ÀÆÄ½ÃÆ¼¸Ê ¸®¼Ò½º ºä
+    ID3D11ShaderResourceView* m_RoughnessView = nullptr;        // ÅØ½ºÃ³ ¿ÀÆÄ½ÃÆ¼¸Ê ¸®¼Ò½º ºä
 
 public:
     void Create(ID3D11Device* device, aiMaterial* material);

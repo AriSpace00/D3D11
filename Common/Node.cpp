@@ -142,7 +142,7 @@ void Node::Render(ID3D11DeviceContext* deviceContext, Model* model)
         deviceContext->PSSetConstantBuffers(3, 1, &model->m_CBMatrixPalette);
 
         deviceContext->IASetVertexBuffers(0, 1, &model->m_Meshes[i].m_VertexBuffer, &model->m_Meshes[i].m_VertexBufferStride, &model->m_Meshes[i].m_VertexBufferOffset);
-        deviceContext->IASetIndexBuffer(model->m_Meshes[i].m_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        deviceContext->IASetIndexBuffer(model->m_Meshes[i].m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
         deviceContext->DrawIndexed(model->m_Meshes[i].m_IndexCount, 0, 0);
     }
 }
