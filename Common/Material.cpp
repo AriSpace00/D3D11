@@ -86,11 +86,18 @@ void Material::Create(ID3D11Device* device, aiMaterial* material)
         DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_OpacityRV);
     }
 
+    if (AI_SUCCESS == material->GetTexture(aiTextureType_METALNESS, 0, &texturePath))
+    {
+        path = ToWString(std::string(texturePath.C_Str()));
+        std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_MetalicRV);
+    }
+
     if (AI_SUCCESS == material->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_RoughnessView);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_RoughnessRV);
     }
 }
 

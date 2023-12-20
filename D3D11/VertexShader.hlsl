@@ -1,5 +1,4 @@
 #include "Shared.hlsli"
-// 정점 셰이더.
 
 PS_INPUT main(VS_INPUT input)
 {

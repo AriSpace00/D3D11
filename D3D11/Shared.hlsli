@@ -3,6 +3,8 @@ Texture2D txNormal : register(t1);
 Texture2D txSpecular : register(t2);
 Texture2D txEmissive : register(t3);
 Texture2D txOpacity : register(t4);
+Texture2D txMetalic : register(t5);
+Texture2D txRoughness : register(t6);
 
 SamplerState samLinear : register(s0);
 
@@ -30,13 +32,17 @@ cbuffer Material : register(b2)
     float4 MaterialDiffuse;
     float4 MaterialSpecular;
     float4 MaterialEmissive;
+    float MaterialMetalic;
+    float MaterialRoughness;
     float MaterialSpecularPower;
     bool UseDiffuseMap;
     bool UseNormalMap;
     bool UseSpecularMap;
     bool UseEmissiveMap;
     bool UseOpacityMap;
-    float2 MaterialPad0;
+    bool UseMetalicMap;
+    bool UseRoughness;
+    float2 Material_Pad0;
 }
 
 cbuffer MatrixPalette : register(b3)

@@ -29,7 +29,10 @@ struct CB_Material
     bool MT_pad3[3];
     bool UseOpacityMap = true;
     bool MT_pad4[3];
-    Vector2 MT_pad5;
+    bool UseMetalicMap = true;
+    bool MT_pad5[3];
+    bool UseRoughnessMap = true;
+    bool MT_pad6[3];
 };
 
 struct CB_MatrixPalette

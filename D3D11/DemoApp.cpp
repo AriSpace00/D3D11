@@ -237,7 +237,7 @@ bool DemoApp::InitScene()
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
     ID3DBlob* pixelShaderBuffer = nullptr;
-    CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+    CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
     
     m_Device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_PixelShader);
     pixelShaderBuffer->Release();

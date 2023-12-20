@@ -110,12 +110,16 @@ void Node::Render(ID3D11DeviceContext* deviceContext, Model* model)
         deviceContext->PSSetShaderResources(2, 1, &model->m_Materials[mi].m_SpecularRV);
         deviceContext->PSSetShaderResources(3, 1, &model->m_Materials[mi].m_EmissiveRV);
         deviceContext->PSSetShaderResources(4, 1, &model->m_Materials[mi].m_OpacityRV);
+        deviceContext->PSSetShaderResources(4, 1, &model->m_Materials[mi].m_MetalicRV);
+        deviceContext->PSSetShaderResources(4, 1, &model->m_Materials[mi].m_RoughnessRV);
 
         model->m_Material.UseDiffuseMap = model->m_Materials[mi].m_DiffuseRV != nullptr ? true : false;
         model->m_Material.UseNormalMap = model->m_Materials[mi].m_NormalRV != nullptr ? true : false;
         model->m_Material.UseSpecularMap = model->m_Materials[mi].m_SpecularRV != nullptr ? true : false;
         model->m_Material.UseEmissiveMap = model->m_Materials[mi].m_EmissiveRV != nullptr ? true : false;
         model->m_Material.UseOpacityMap = model->m_Materials[mi].m_OpacityRV != nullptr ? true : false;
+        model->m_Material.UseMetalicMap = model->m_Materials[mi].m_OpacityRV != nullptr ? true : false;
+        model->m_Material.UseRoughnessMap = model->m_Materials[mi].m_OpacityRV != nullptr ? true : false;
 
         if (model->m_Material.UseOpacityMap)
         {
