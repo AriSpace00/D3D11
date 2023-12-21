@@ -18,21 +18,17 @@ struct CB_Material
     Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
     Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
     Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };
+    float Metalic;
+    float Roughness;
     float SpecularPower = 80;
-    bool UseDiffuseMap = true;
-    bool MT_pad0[3];
-    bool UseNormalMap = true;
-    bool MT_pad1[3];
-    bool UseSpecularMap = true;
-    bool MT_pad2[3];
-    bool UseEmissiveMap = true;
-    bool MT_pad3[3];
-    bool UseOpacityMap = true;
-    bool MT_pad4[3];
-    bool UseMetalicMap = true;
-    bool MT_pad5[3];
-    bool UseRoughnessMap = true;
-    bool MT_pad6[3];
+    float UseDiffuseMap;
+    float UseNormalMap;
+    float UseSpecularMap;
+    float UseEmissiveMap;
+    float UseOpacityMap;
+    float UseMetalicMap;
+    float UseRoughnessMap;
+    Vector2 Material_pad0;
 };
 
 struct CB_MatrixPalette

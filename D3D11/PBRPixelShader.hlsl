@@ -21,7 +21,7 @@ float gaSchlickG1(float cosTheta, float k)
 float gaSchlickGGX(float cosLi, float cosLo, float roughness)
 {
     float r = roughness + 1.0;
-    float k = (r * r) / 8.0; 
+    float k = (r * r) / 8.0;
     return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
 }
 
@@ -45,69 +45,50 @@ float4 main(PS_INPUT input) : SV_Target
         Normal = normalize(Normal);
     }
 
+    // Albedo
+    float3 Albedo;
+    if (UseDiffuseMap)
+    {
+        Albedo = txDiffuse.Sample(samLinear, input.Texcoord);
+    }
+    else
+    {
+        Albedo = float4(1.0f, 0.0f, 0.0f, 1.0f);
+    }
+    Albedo.rgb = pow(Albedo, 2.2);
+
+    // Ambient
+    float3 Ambient = LightAmbient * MaterialAmbient * Albedo;
+
     float3 LightDirVector = normalize(LightDirection.xyz);
     float3 ViewVector = normalize(EyePosition - input.PosWorld);
     float3 HalfVector = normalize(-LightDirVector + ViewVector);
 
-    // Ambient
-    float4 AmbientLight = LightAmbient * MaterialAmbient;
-
-    // Albedo
-    float4 Albedo = txDiffuse.Sample(samLinear, input.Texcoord);
-    float4 AlbedoColor = LightDiffuse * MaterialDiffuse * Albedo;
-    float4 AlbedoLight = dot(Normal, -LightDirVector);
-    if (UseDiffuseMap)
-    {
-        AlbedoLight *= AlbedoColor;
-    }
-    else
-    {
-        AlbedoColor.rgb = float4(0.8f, 0.8f, 0.8f, 1.0f);
-        AlbedoLight *= AlbedoColor;
-    }
-
-    // Emissive
-    float4 Emissive = 0;
-    if (UseEmissiveMap)
-    {
-        Emissive = txEmissive.Sample(samLinear, input.Texcoord) * MaterialEmissive;
-    }
-
-    // Opacity
-    float Opacity = 1.0f;
-    if (UseOpacityMap)
-    {
-        Opacity = txOpacity.Sample(samLinear, input.Texcoord).a;
-    }
+    float CosNH = max(0.0f, dot(HalfVector, Normal));
+    float CosLH = max(0.0f, dot(ViewVector, HalfVector));
+    float CosNL = max(0.0f, dot(Normal, -LightDirVector));
+    float CosNV = max(0.0f, dot(Normal, ViewVector));
 
     // PBR
     float Metalic = txMetalic.Sample(samLinear, input.Texcoord).r;
     float Roughness = txRoughness.Sample(samLinear, input.Texcoord).r;
 
-    float HDotN = max(0.0f, dot(HalfVector, Normal));
-    float LightReflection = 2.0 * HDotN * Normal - ViewVector;
+    float LightReflection = 2.0 * CosNH * Normal - ViewVector;
 
     float3 FresenalFactor = lerp(Fdielectric, Albedo, Metalic);
-    float3 LightHalfVector = normalize(LightDirection + ViewVector);
 
-    float CosLi = max(0.0, dot(Normal, LightDirection));
-    float CosLh = max(0.0, dot(Normal, LightHalfVector));
-
-    float3 F = fresnelSchlick(FresenalFactor, max(0.0, dot(LightHalfVector, ViewVector)));
-    float D = ndfGGX(CosLh, max(0.01, Roughness));
-    float G = gaSchlickGGX(CosLi, HDotN, Roughness);
+    float3 F = fresnelSchlick(FresenalFactor, CosLH);
+    float D = ndfGGX(CosNH, max(0.01, Roughness));
+    float G = gaSchlickGGX(CosNL, CosNH, Roughness);
 
     float3 Kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), Metalic);
     float3 DiffuseBRDF = Kd * Albedo / PI;
-    float3 SpecularBRDF = (F * D * G) / max(Epsilon, 4.0 * CosLi * HDotN);
+    float3 SpecularBRDF = (F * D * G) / max(Epsilon, 4.0 * CosNL * CosNV);
 
-    float3 DirectionLighting = 0.0f;
-
-    DirectionLighting += (DiffuseBRDF + SpecularBRDF) * CosLi;
+    float3 PBR = (DiffuseBRDF + SpecularBRDF) * CosNL;
 
     // Final
-    float3 finalColor = 0;
-    //finalColor = AmbientLight + DirectionLighting + Emissive;
-
-    return float4(AmbientLight.rgb, Opacity);
+    float3 finalColor = PBR + Ambient;
+    finalColor = pow(finalColor, 1 / 2.2f);
+    return float4(finalColor, 1.0f);
 }
