@@ -16,7 +16,7 @@ struct CB_DirectionalLight
 {
     Vector3 Direction = { 0.0f,0.0f,1.0f };
     float DL_pad0;
-    Vector4 Ambient = { 0.1f,0.1f,0.1f,0.1f };
+    Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };
     Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
     Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
     Vector3 EyePosition;

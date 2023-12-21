@@ -46,14 +46,14 @@ float4 main(PS_INPUT input) : SV_Target
     }
 
     // Albedo
-    float3 Albedo;
+    float3 Albedo = LightDiffuse * MaterialDiffuse;
     if (UseDiffuseMap)
     {
-        Albedo = txDiffuse.Sample(samLinear, input.Texcoord);
+        Albedo *= txDiffuse.Sample(samLinear, input.Texcoord).rgb;
     }
     else
     {
-        Albedo = float4(1.0f, 0.0f, 0.0f, 1.0f);
+        Albedo *= float4(1.0f, 0.0f, 0.0f, 1.0f);
     }
     Albedo.rgb = pow(Albedo, 2.2);
 
@@ -73,22 +73,20 @@ float4 main(PS_INPUT input) : SV_Target
     float Metalic = txMetalic.Sample(samLinear, input.Texcoord).r;
     float Roughness = txRoughness.Sample(samLinear, input.Texcoord).r;
 
-    float LightReflection = 2.0 * CosNH * Normal - ViewVector;
-
     float3 FresenalFactor = lerp(Fdielectric, Albedo, Metalic);
 
     float3 F = fresnelSchlick(FresenalFactor, CosLH);
-    float D = ndfGGX(CosNH, max(0.01, Roughness));
-    float G = gaSchlickGGX(CosNL, CosNH, Roughness);
+    float D = ndfGGX(CosNH, max(0.1, Roughness));
+    float G = gaSchlickGGX(CosNL, CosNV, Roughness);
 
     float3 Kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), Metalic);
     float3 DiffuseBRDF = Kd * Albedo / PI;
     float3 SpecularBRDF = (F * D * G) / max(Epsilon, 4.0 * CosNL * CosNV);
 
     float3 PBR = (DiffuseBRDF + SpecularBRDF) * CosNL;
+    PBR.rgb = pow(PBR, 1 / 2.2);
 
     // Final
     float3 finalColor = PBR + Ambient;
-    finalColor = pow(finalColor, 1 / 2.2f);
     return float4(finalColor, 1.0f);
 }

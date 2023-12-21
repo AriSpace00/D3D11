@@ -43,21 +43,13 @@ void DemoApp::Update()
     App::Update();
 
     QueryPerformanceCounter(&m_CurrentTime);
-
     m_DeltaTime = static_cast<double>(m_CurrentTime.QuadPart - m_PrevTime.QuadPart) / m_Frequency.QuadPart;
-
     m_PrevTime = m_CurrentTime;
 
     m_Model->Update(m_DeltaTime);
 
-    Matrix mSpin;
-    Matrix mSpinX = XMMatrixRotationX(m_Roll);
-    Matrix mSpinY = XMMatrixRotationY(m_Pitch);
-    Matrix mSpinZ = XMMatrixRotationZ(m_Yaw);
-    mSpin = mSpinX * mSpinY * mSpinZ;
-
+    Matrix mSpin = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_Pitch), XMConvertToRadians(m_Yaw), XMConvertToRadians(m_Roll));
     Matrix mScale = Matrix::CreateScale(m_MeshScale, m_MeshScale, m_MeshScale);
-
     m_Model->SetTransform(DirectX::XMMatrixIdentity(), mSpin, mScale);
 
     m_Light.EyePosition = m_Eye;
@@ -343,13 +335,13 @@ void DemoApp::RunImGUI()
         ImGui::Text("Rotation");
         ImGui::Text("X");
         ImGui::SameLine();
-        ImGui::SliderFloat("##cx", &m_Roll, 0.0f, 90.0f);
+        ImGui::SliderFloat("##cx", &m_Roll, -360.0f, 360.0f);
         ImGui::Text("Y");
         ImGui::SameLine();
-        ImGui::SliderFloat("##cy", &m_Pitch, 0.0f, 90.0f);
+        ImGui::SliderFloat("##cy", &m_Pitch, -360.0f, 360.0f);
         ImGui::Text("Z");
         ImGui::SameLine();
-        ImGui::SliderFloat("##cz", &m_Yaw, 0.0f, 90.0f);
+        ImGui::SliderFloat("##cz", &m_Yaw, -360.0f, 360.0f);
         ImGui::Text("Scale");
         ImGui::SameLine();
         ImGui::SliderFloat("##cs", &m_MeshScale, 0.0f, 100.0f);
@@ -408,11 +400,11 @@ void DemoApp::RunImGUI()
 
         ImGui::Text("[Directional Light]");
         ImGui::Text("Light Direction");
-        ImGui::SliderFloat3("##ld", (float*)&m_Light.Direction, -1.0f, 1.0f);
+        ImGui::SliderFloat3("##ldir", (float*)&m_Light.Direction, -1.0f, 1.0f);
         ImGui::Text("Light Ambient");
         ImGui::ColorEdit4("##la", (float*)&m_Light.Ambient);
         ImGui::Text("Light Diffuse");
-        ImGui::ColorEdit4("##ld", (float*)&m_Light.Diffuse);
+        ImGui::ColorEdit4("##ldiff", (float*)&m_Light.Diffuse);
         ImGui::Text("Light Specular");
         ImGui::ColorEdit4("##ls", (float*)&m_Light.Specular);
 
