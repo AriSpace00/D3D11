@@ -4,12 +4,12 @@ static const float PI = 3.141592;
 static const float Epsilon = 0.00001;
 static const float3 Fdielectric = 0.04;
 
-float ndfGGX(float cosLh, float roughness)
+float ndfGGX(float cosNH, float roughness)
 {
     float alpha = roughness * roughness;
     float alphaSq = alpha * alpha;
 
-    float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
+    float denom = (cosNH * cosNH) * (alphaSq - 1.0) + 1.0;
     return alphaSq / (PI * denom * denom);
 }
 
@@ -18,16 +18,16 @@ float gaSchlickG1(float cosTheta, float k)
     return cosTheta / (cosTheta * (1.0 - k) + k);
 }
 
-float gaSchlickGGX(float cosLi, float cosLo, float roughness)
+float gaSchlickGGX(float cosNL, float cosNV, float roughness)
 {
     float r = roughness + 1.0;
     float k = (r * r) / 8.0;
-    return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
+    return gaSchlickG1(cosNL, k) * gaSchlickG1(cosNV, k);
 }
 
-float3 fresnelSchlick(float3 F0, float cosTheta)
+float3 fresnelSchlick(float3 fresenalFactor, float cosLH)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    return fresenalFactor + (1.0 - fresenalFactor) * pow(1.0 - cosLH, 5.0);
 }
 
 float4 main(PS_INPUT input) : SV_Target
@@ -46,26 +46,26 @@ float4 main(PS_INPUT input) : SV_Target
     }
 
     // Albedo
-    float3 Albedo = LightDiffuse * MaterialDiffuse;
+    float3 Albedo = 0.0f;
     if (UseDiffuseMap)
     {
-        Albedo *= txDiffuse.Sample(samLinear, input.Texcoord).rgb;
+        Albedo = txDiffuse.Sample(samLinear, input.Texcoord).rgb;
     }
     else
     {
-        Albedo *= float4(1.0f, 0.0f, 0.0f, 1.0f);
+        Albedo = float4(1.0f, 0.0f, 0.0f, 1.0f);
     }
     Albedo.rgb = pow(Albedo, 2.2);
 
     // Ambient
-    float3 Ambient = LightAmbient * MaterialAmbient * Albedo;
+    float3 Ambient = LightAmbient.rgb * MaterialAmbient.rgb * Albedo;
 
     float3 LightDirVector = normalize(LightDirection.xyz);
     float3 ViewVector = normalize(EyePosition - input.PosWorld);
     float3 HalfVector = normalize(-LightDirVector + ViewVector);
 
-    float CosNH = max(0.0f, dot(HalfVector, Normal));
-    float CosLH = max(0.0f, dot(ViewVector, HalfVector));
+    float CosNH = max(0.0f, dot(Normal, HalfVector));
+    float CosVH = max(0.0f, dot(ViewVector, HalfVector));
     float CosNL = max(0.0f, dot(Normal, -LightDirVector));
     float CosNV = max(0.0f, dot(Normal, ViewVector));
 
@@ -75,7 +75,7 @@ float4 main(PS_INPUT input) : SV_Target
 
     float3 FresenalFactor = lerp(Fdielectric, Albedo, Metalic);
 
-    float3 F = fresnelSchlick(FresenalFactor, CosLH);
+    float3 F = fresnelSchlick(FresenalFactor, CosVH);
     float D = ndfGGX(CosNH, max(0.1, Roughness));
     float G = gaSchlickGGX(CosNL, CosNV, Roughness);
 
@@ -84,9 +84,12 @@ float4 main(PS_INPUT input) : SV_Target
     float3 SpecularBRDF = (F * D * G) / max(Epsilon, 4.0 * CosNL * CosNV);
 
     float3 PBR = (DiffuseBRDF + SpecularBRDF) * CosNL;
-    PBR.rgb = pow(PBR, 1 / 2.2);
 
+    PBR = pow(PBR, 1 / 2.2);
+    
     // Final
-    float3 finalColor = PBR + Ambient;
-    return float4(finalColor, 1.0f);
+    //float3 finalColor = PBR + Ambient;
+    //finalColor = pow(finalColor, 1 / 2.2);
+
+    return float4(PBR, 1.0f);
 }
