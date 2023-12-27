@@ -3,6 +3,17 @@
 #include <string>
 #include <assimp/matrix4x4.h>
 
+#define LOG_MESSAGEA(...) \
+{ \
+    char buffer[256]; \
+    sprintf_s(buffer, 256, "[MESSAGE] %s:%d - ", __FUNCTION__, __LINE__); \
+    char message[256]; \
+    sprintf_s(message, 256, __VA_ARGS__); \
+    strcat_s(buffer, message); \
+    strcat_s(buffer, "\n"); \
+    OutputDebugStringA(buffer); \
+}
+
 inline std::wstring ToWString(const std::string& s)
 {
 	std::wstring wsTmp(s.begin(), s.end());

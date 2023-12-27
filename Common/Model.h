@@ -45,29 +45,29 @@ public:
     ~Model();
 
 public:
-    std::vector<Node*> m_Nodes;
-    std::vector<Mesh> m_Meshes;
-    std::vector<Material> m_Materials;
-    std::vector<Animation*> m_Animations;
+    std::vector<Node*> m_nodes;
+    std::vector<Mesh> m_meshes;
+    std::vector<Material> m_materials;
+    std::vector<Animation*> m_animations;
 
-    std::wstring m_FileName;
-    bool IsFileLoad;
+    std::wstring m_fileName;
+    bool isFileLoad;
 
-    CB_Transform m_Transform;
-    CB_Material m_Material;
-    CB_MatrixPalette m_MatrixPalette;
+    CB_Transform m_transform;
+    CB_Material m_material;
+    CB_MatrixPalette m_matrixPalette;
 
-    ID3D11Buffer* m_CBTransform = nullptr;                  
-    ID3D11Buffer* m_CBMaterial = nullptr;                   
-    ID3D11Buffer* m_CBMatrixPalette = nullptr;              
+    ID3D11Buffer* m_transformCB = nullptr;                  
+    ID3D11Buffer* m_materialCB = nullptr;                   
+    ID3D11Buffer* m_matrixPaletteCB = nullptr;              
 
-    ID3D11BlendState* m_AlphaBlendState = nullptr;          
+    ID3D11BlendState* m_alphaBlendState = nullptr;          
 
-    Matrix m_Position;
-    Matrix m_Rotation;
-    Matrix m_Scale;
+    Matrix m_position;
+    Matrix m_rotation;
+    Matrix m_scale;
 
-    bool m_IsEvaluate;
+    bool m_isEvaluate;
 
 public:
     void ReadFile(ID3D11Device* device, const std::string& path);

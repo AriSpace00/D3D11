@@ -13,26 +13,26 @@ Animation::~Animation()
 
 void Animation::Create(const aiNodeAnim* nodeAnim)
 {
-    m_NodeName = nodeAnim->mNodeName.C_Str();
-    m_AnimationKeys.resize(nodeAnim->mNumPositionKeys);
+    m_nodeName = nodeAnim->mNodeName.C_Str();
+    m_animationKeys.resize(nodeAnim->mNumPositionKeys);
 
     // 애니메이션 키가 있을 때 해당 키 값을 가져옴
     if (nodeAnim->mNumPositionKeys > 0)
     {
         for (int i = 0; i < nodeAnim->mNumPositionKeys; i++)
         {
-            m_AnimationKeys[i] = new AnimationKey();
+            m_animationKeys[i] = new AnimationKey();
 
             // 위치 키프레임 정보
-            m_AnimationKeys[i]->Time = nodeAnim->mPositionKeys[i].mTime;
-            m_AnimationKeys[i]->Position =
+            m_animationKeys[i]->Time = nodeAnim->mPositionKeys[i].mTime;
+            m_animationKeys[i]->Position =
                 DirectX::XMFLOAT3(
                     nodeAnim->mPositionKeys[i].mValue.x,
                     nodeAnim->mPositionKeys[i].mValue.y,
                     nodeAnim->mPositionKeys[i].mValue.z);
 
             // 회전 키프레임 정보
-            m_AnimationKeys[i]->Rotation = 
+            m_animationKeys[i]->Rotation = 
                 DirectX::XMFLOAT4(
                     nodeAnim->mRotationKeys[i].mValue.x,
                     nodeAnim->mRotationKeys[i].mValue.y,
@@ -40,7 +40,7 @@ void Animation::Create(const aiNodeAnim* nodeAnim)
                     nodeAnim->mRotationKeys[i].mValue.w);
 
             // 스케일 키프레임 정보
-            m_AnimationKeys[i]->Scale = 
+            m_animationKeys[i]->Scale = 
                 DirectX::XMFLOAT3(
                     nodeAnim->mScalingKeys[i].mValue.x,
                     nodeAnim->mScalingKeys[i].mValue.y,
@@ -51,13 +51,13 @@ void Animation::Create(const aiNodeAnim* nodeAnim)
 
 void Animation::Evaluate()
 {
-    int nextKeyIndex = (m_CurKeyIndex + 1) % m_AnimationKeys.size();
+    int nextKeyIndex = (m_curKeyIndex + 1) % m_animationKeys.size();
 
-    const AnimationKey* curKey = m_AnimationKeys[m_CurKeyIndex];
-    const AnimationKey* nextKey = m_AnimationKeys[nextKeyIndex];
+    const AnimationKey* curKey = m_animationKeys[m_curKeyIndex];
+    const AnimationKey* nextKey = m_animationKeys[nextKeyIndex];
 
-    float interval = (curKey->Time - nextKey->Time) / m_AnimFps;
-    float ratio = (m_Duration - curKey->Time / m_AnimFps) / interval;
+    float interval = (curKey->Time - nextKey->Time) / m_animFps;
+    float ratio = (m_duration - curKey->Time / m_animFps) / interval;
 
     Vector3 interpolationPosition = Vector3::Lerp(curKey->Position, nextKey->Position, ratio);
     Vector4 interpolationRotation = Quaternion::Slerp(curKey->Rotation, nextKey->Rotation, ratio);
@@ -65,24 +65,24 @@ void Animation::Evaluate()
 
     Matrix interpolationTM = Matrix::CreateScale(interpolationScale) * Matrix::CreateFromQuaternion(interpolationRotation) * Matrix::CreateTranslation(interpolationPosition);
 
-    m_InterpolationTM = interpolationTM;
+    m_interpolationTM = interpolationTM;
 }
 
 void Animation::Update(const float& deltaTime)
 {
-    m_Duration += deltaTime;
+    m_duration += deltaTime;
 
-    if (m_AnimationKeys.size() > 0)
+    if (m_animationKeys.size() > 0)
     {
-        m_NextKeyIndex = (m_CurKeyIndex + 1) % m_AnimationKeys.size();
+        m_nextKeyIndex = (m_curKeyIndex + 1) % m_animationKeys.size();
 
-        if (m_Duration > m_AnimationKeys[m_NextKeyIndex]->Time / m_AnimFps)
+        if (m_duration > m_animationKeys[m_nextKeyIndex]->Time / m_animFps)
         {
-            m_CurKeyIndex = m_NextKeyIndex;
+            m_curKeyIndex = m_nextKeyIndex;
 
-            if (m_CurKeyIndex == 0)
+            if (m_curKeyIndex == 0)
             {
-                m_Duration = 0.f;
+                m_duration = 0.f;
             }
         }
     }

@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Default">
-      <UniqueIdentifier>{6d98bc1c-c499-4750-9d57-54be05e1c10b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Model">
       <UniqueIdentifier>{07fc9b93-67da-4702-8cbe-568627aa60ff}</UniqueIdentifier>
     </Filter>
@@ -30,13 +27,40 @@
     <Filter Include="소스 파일\Model\Mesh\Bone">
       <UniqueIdentifier>{ffda224b-5b44-49c4-be1a-d4bee705e65b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Actor">
+      <UniqueIdentifier>{2e7898db-7dd6-48c5-9615-8c7328cb2226}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component">
+      <UniqueIdentifier>{c38e7d49-c60c-4073-8589-dc5cd312341c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\SceneComponent">
+      <UniqueIdentifier>{d1e32fb1-d38d-4cb6-8f40-015812bbea4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\StaticMeshComponent">
+      <UniqueIdentifier>{0ccab806-5c5b-47d6-8b09-1a8755e2bbfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\SkeletalMeshComponent">
+      <UniqueIdentifier>{000e8422-0fe8-4a21-ad56-074d9813ce9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{2823018b-670e-4b5d-899f-ea01113848d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\ResourceManager">
+      <UniqueIdentifier>{3d4113cc-ad1f-43a4-94f9-4a43a37343a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource">
+      <UniqueIdentifier>{4d741731-29ef-4348-be71-8eeb1c8511f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Actor\StaticMeshActor">
+      <UniqueIdentifier>{abf207f7-517e-49a1-aeee-aded72dbeef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Actor\SkeletalMeshActor">
+      <UniqueIdentifier>{246a440d-2a00-4173-91ab-3f9fa05a7591}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="App.h">
-      <Filter>소스 파일\Default</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>소스 파일\Model</Filter>
@@ -53,17 +77,36 @@
     <ClInclude Include="Animation.h">
       <Filter>소스 파일\Model\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Helper.h">
-      <Filter>소스 파일\Default</Filter>
-    </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>소스 파일\Model\Mesh\Node</Filter>
     </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>소스 파일\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>소스 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneComponent.h">
+      <Filter>소스 파일\Component\SceneComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshComponent.h">
+      <Filter>소스 파일\Component\StaticMeshComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshComponent.h">
+      <Filter>소스 파일\Component\SkeletalMeshComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>소스 파일\Manager\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshActor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App.cpp">
-      <Filter>소스 파일\Default</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>소스 파일\Model</Filter>
     </ClCompile>
@@ -81,6 +124,30 @@
     </ClCompile>
     <ClCompile Include="Node.cpp">
       <Filter>소스 파일\Model\Mesh\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>소스 파일\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>소스 파일\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneComponent.cpp">
+      <Filter>소스 파일\Component\SceneComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshComponent.cpp">
+      <Filter>소스 파일\Component\StaticMeshComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshComponent.cpp">
+      <Filter>소스 파일\Component\SkeletalMeshComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>소스 파일\Manager\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshActor.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

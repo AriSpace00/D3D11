@@ -42,7 +42,7 @@ void Material::Create(ID3D11Device* device, aiMaterial* material)
                 extractedString = folderPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
             }
 
-            if (FBXFileName == extractedString)
+            if (m_fileName == extractedString)
             {
                 name = material->GetName().C_Str();
                 break;
@@ -55,53 +55,53 @@ void Material::Create(ID3D11Device* device, aiMaterial* material)
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_DiffuseRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_diffuseRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_NORMALS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_NormalRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_normalRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_SPECULAR, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_SpecularRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_specularRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_EMISSIVE, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_EmissiveRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_emissiveRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_OpacityRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_opacityRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_METALNESS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_MetalicRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_metalicRV);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_RoughnessRV);
+        DirectX::CreateWICTextureFromFile(device, finalPath.c_str(), nullptr, &m_roughnessRV);
     }
 }
 
 void Material::SetFileName(const std::wstring& fileName)
 {
-    FBXFileName = fileName;
+    m_fileName = fileName;
 }

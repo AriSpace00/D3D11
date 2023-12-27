@@ -32,8 +32,8 @@ App::~App()
 
 bool App::Initialize(UINT width, UINT height)
 {
-    m_ClientWidth = width;
-    m_ClientHeight = height;
+    m_clientWidth = width;
+    m_clientHeight = height;
 
     RegisterClassExW(&m_wcex);
 

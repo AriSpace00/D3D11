@@ -7,8 +7,8 @@
 #include <assimp/scene.h>
 
 Node::Node()
-    : m_ParentNode(nullptr)
-    , m_Animation(nullptr)
+    : m_parentNode(nullptr)
+    , m_animation(nullptr)
 {
 }
 
@@ -18,17 +18,17 @@ Node::~Node()
 
 void Node::Create(ID3D11Device* device, Model* model, const aiScene* scene, const aiNode* node)
 {
-    m_NodeName = node->mName.C_Str();
-    m_NodeLocalTM = ConvertaiMatrixToXMMatrix(node->mTransformation);
+    m_nodeName = node->mName.C_Str();
+    m_nodeLocalTM = ConvertaiMatrixToXMMatrix(node->mTransformation);
 
     if (node->mParent != nullptr)
     {
-        for (int i = 0; i < model->m_Nodes.size(); i++)
+        for (int i = 0; i < model->m_nodes.size(); i++)
         {
-            if (node->mParent->mName.C_Str() == model->m_Nodes[i]->m_NodeName)
+            if (node->mParent->mName.C_Str() == model->m_nodes[i]->m_nodeName)
             {
-                m_ParentNode = new Node();
-                m_ParentNode = model->m_Nodes[i];
+                m_parentNode = new Node();
+                m_parentNode = model->m_nodes[i];
                 break;
             }
         }
@@ -36,18 +36,18 @@ void Node::Create(ID3D11Device* device, Model* model, const aiScene* scene, cons
 
     FindNodeAnimation(scene, node);
 
-    model->m_Animations.push_back(m_Animation);
-    model->m_Nodes.push_back(this);
+    model->m_animations.push_back(m_animation);
+    model->m_nodes.push_back(this);
 
-    for (int i = 0; i < model->m_Meshes.size(); i++)
+    for (int i = 0; i < model->m_meshes.size(); i++)
     {
-        if (model->m_Meshes[i].m_Bones.size() > 0)
+        if (model->m_meshes[i].m_bones.size() > 0)
         {
-            for (int j = 0; j < model->m_Meshes[i].m_Bones.size(); j++)
+            for (int j = 0; j < model->m_meshes[i].m_bones.size(); j++)
             {
-                if (model->m_Meshes[i].m_Bones[j]->m_BoneName == m_NodeName)
+                if (model->m_meshes[i].m_bones[j]->m_boneName == m_nodeName)
                 {
-                    model->m_Meshes[i].m_Bones[j]->m_NodeWorldMatrixPtr = &m_NodeWorldTM;
+                    model->m_meshes[i].m_bones[j]->m_nodeWorldMatrixPtr = &m_nodeWorldTM;
                 }
             }
         }
@@ -55,85 +55,85 @@ void Node::Create(ID3D11Device* device, Model* model, const aiScene* scene, cons
 
     if (node->mNumChildren > 0)
     {
-        m_Children.resize(node->mNumChildren);
+        m_children.resize(node->mNumChildren);
         for (int i = 0; i < node->mNumChildren; i++)
         {
-            m_Children[i].Create(device, model, scene, node->mChildren[i]);
+            m_children[i].Create(device, model, scene, node->mChildren[i]);
         }
     }
 }
 
 void Node::Update(float deltaTime, Model* model)
 {
-    m_Animation->Update(deltaTime);
+    m_animation->Update(deltaTime);
 
-    if (!m_Animation->m_AnimationKeys.empty())
+    if (!m_animation->m_animationKeys.empty())
     {
-        if (model->m_IsEvaluate)
+        if (model->m_isEvaluate)
         {
-            m_Animation->Evaluate();
-            m_NodeLocalTM = m_Animation->m_InterpolationTM;
+            m_animation->Evaluate();
+            m_nodeLocalTM = m_animation->m_interpolationTM;
         }
         else
         {
-            Matrix position = Matrix::CreateTranslation(m_Animation->m_AnimationKeys[m_Animation->m_CurKeyIndex]->Position);
-            Matrix rotation = Matrix::CreateFromQuaternion(m_Animation->m_AnimationKeys[m_Animation->m_CurKeyIndex]->Rotation);
-            Matrix scale = Matrix::CreateScale(m_Animation->m_AnimationKeys[m_Animation->m_CurKeyIndex]->Scale);
+            Matrix position = Matrix::CreateTranslation(m_animation->m_animationKeys[m_animation->m_curKeyIndex]->Position);
+            Matrix rotation = Matrix::CreateFromQuaternion(m_animation->m_animationKeys[m_animation->m_curKeyIndex]->Rotation);
+            Matrix scale = Matrix::CreateScale(m_animation->m_animationKeys[m_animation->m_curKeyIndex]->Scale);
 
-            m_NodeLocalTM = scale * rotation * position;
+            m_nodeLocalTM = scale * rotation * position;
         }
     }
 
-    if (m_ParentNode != nullptr)
+    if (m_parentNode != nullptr)
     {
-        m_NodeWorldTM = m_NodeLocalTM * GetParentWorldTransform(m_ParentNode);
+        m_nodeWorldTM = m_nodeLocalTM * GetParentWorldTransform(m_parentNode);
     }
     else
     {
-        m_NodeWorldTM = m_NodeLocalTM;
+        m_nodeWorldTM = m_nodeLocalTM;
     }
 }
 
 void Node::Render(ID3D11DeviceContext* deviceContext, Model* model)
 {
-    model->m_Transform.WorldMatrix = XMMatrixTranspose(m_NodeWorldTM);
-    deviceContext->UpdateSubresource(model->m_CBTransform, 0, nullptr, &model->m_Transform, 0, 0);
-    deviceContext->VSSetConstantBuffers(0, 1, &model->m_CBTransform);
-    deviceContext->PSSetConstantBuffers(0, 1, &model->m_CBTransform);
+    model->m_transform.WorldMatrix = XMMatrixTranspose(m_nodeWorldTM);
+    deviceContext->UpdateSubresource(model->m_transformCB, 0, nullptr, &model->m_transform, 0, 0);
+    deviceContext->VSSetConstantBuffers(0, 1, &model->m_transformCB);
+    deviceContext->PSSetConstantBuffers(0, 1, &model->m_transformCB);
 
-    for (size_t i = 0; i < model->m_Meshes.size(); i++)
+    for (size_t i = 0; i < model->m_meshes.size(); i++)
     {
-        size_t mi = model->m_Meshes[i].m_MaterialIndex;
+        size_t mi = model->m_meshes[i].m_materialIndex;
 
-        deviceContext->PSSetShaderResources(0, 1, &model->m_Materials[mi].m_DiffuseRV);
-        deviceContext->PSSetShaderResources(1, 1, &model->m_Materials[mi].m_NormalRV);
-        deviceContext->PSSetShaderResources(2, 1, &model->m_Materials[mi].m_SpecularRV);
-        deviceContext->PSSetShaderResources(3, 1, &model->m_Materials[mi].m_EmissiveRV);
-        deviceContext->PSSetShaderResources(4, 1, &model->m_Materials[mi].m_OpacityRV);
-        deviceContext->PSSetShaderResources(5, 1, &model->m_Materials[mi].m_MetalicRV);
-        deviceContext->PSSetShaderResources(6, 1, &model->m_Materials[mi].m_RoughnessRV);
+        deviceContext->PSSetShaderResources(0, 1, &model->m_materials[mi].m_diffuseRV);
+        deviceContext->PSSetShaderResources(1, 1, &model->m_materials[mi].m_normalRV);
+        deviceContext->PSSetShaderResources(2, 1, &model->m_materials[mi].m_specularRV);
+        deviceContext->PSSetShaderResources(3, 1, &model->m_materials[mi].m_emissiveRV);
+        deviceContext->PSSetShaderResources(4, 1, &model->m_materials[mi].m_opacityRV);
+        deviceContext->PSSetShaderResources(5, 1, &model->m_materials[mi].m_metalicRV);
+        deviceContext->PSSetShaderResources(6, 1, &model->m_materials[mi].m_roughnessRV);
 
-        model->m_Material.UseDiffuseMap = model->m_Materials[mi].m_DiffuseRV != nullptr ? true : false;
-        model->m_Material.UseNormalMap = model->m_Materials[mi].m_NormalRV != nullptr ? true : false;
-        model->m_Material.UseSpecularMap = model->m_Materials[mi].m_SpecularRV != nullptr ? true : false;
-        model->m_Material.UseEmissiveMap = model->m_Materials[mi].m_EmissiveRV != nullptr ? true : false;
-        model->m_Material.UseOpacityMap = model->m_Materials[mi].m_OpacityRV != nullptr ? true : false;
-        model->m_Material.UseMetalicMap = model->m_Materials[mi].m_MetalicRV != nullptr ? true : false;
-        model->m_Material.UseRoughnessMap = model->m_Materials[mi].m_RoughnessRV != nullptr ? true : false;
+        model->m_material.UseDiffuseMap = model->m_materials[mi].m_diffuseRV != nullptr ? true : false;
+        model->m_material.UseNormalMap = model->m_materials[mi].m_normalRV != nullptr ? true : false;
+        model->m_material.UseSpecularMap = model->m_materials[mi].m_specularRV != nullptr ? true : false;
+        model->m_material.UseEmissiveMap = model->m_materials[mi].m_emissiveRV != nullptr ? true : false;
+        model->m_material.UseOpacityMap = model->m_materials[mi].m_opacityRV != nullptr ? true : false;
+        model->m_material.UseMetalicMap = model->m_materials[mi].m_metalicRV != nullptr ? true : false;
+        model->m_material.UseRoughnessMap = model->m_materials[mi].m_roughnessRV != nullptr ? true : false;
 
-        if (model->m_Material.UseOpacityMap)
+        if (model->m_material.UseOpacityMap)
         {
-            deviceContext->OMSetBlendState(model->m_AlphaBlendState, nullptr, 0xffffffff);
+            deviceContext->OMSetBlendState(model->m_alphaBlendState, nullptr, 0xffffffff);
         }
         else
         {
             deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
         }
-        deviceContext->UpdateSubresource(model->m_CBMaterial, 0, nullptr, &model->m_Material, 0, 0);
+        deviceContext->UpdateSubresource(model->m_materialCB, 0, nullptr, &model->m_material, 0, 0);
 
-        model->m_Meshes[i].UpdateMatrixPalette(model->m_MatrixPalette.Array);
+        model->m_meshes[i].UpdateMatrixPalette(model->m_matrixPalette.Array);
 
-        for (const auto& matrix : model->m_MatrixPalette.Array)
+        for (const auto& matrix : model->m_matrixPalette.Array)
         {
             assert(matrix._41 == 0.f);
             assert(matrix._42 == 0.f);
@@ -141,23 +141,23 @@ void Node::Render(ID3D11DeviceContext* deviceContext, Model* model)
             assert(matrix._44 == 1.f);
         }
 
-        deviceContext->UpdateSubresource(model->m_CBMatrixPalette, 0, nullptr, &model->m_MatrixPalette, 0, 0);
-        deviceContext->VSSetConstantBuffers(3, 1, &model->m_CBMatrixPalette);
-        deviceContext->PSSetConstantBuffers(3, 1, &model->m_CBMatrixPalette);
+        deviceContext->UpdateSubresource(model->m_matrixPaletteCB, 0, nullptr, &model->m_matrixPalette, 0, 0);
+        deviceContext->VSSetConstantBuffers(3, 1, &model->m_matrixPaletteCB);
+        deviceContext->PSSetConstantBuffers(3, 1, &model->m_matrixPaletteCB);
 
-        deviceContext->IASetVertexBuffers(0, 1, &model->m_Meshes[i].m_VertexBuffer, &model->m_Meshes[i].m_VertexBufferStride, &model->m_Meshes[i].m_VertexBufferOffset);
-        deviceContext->IASetIndexBuffer(model->m_Meshes[i].m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        deviceContext->DrawIndexed(model->m_Meshes[i].m_IndexCount, 0, 0);
+        deviceContext->IASetVertexBuffers(0, 1, &model->m_meshes[i].m_vertexBuffer, &model->m_meshes[i].m_vertexBufferStride, &model->m_meshes[i].m_vertexBufferOffset);
+        deviceContext->IASetIndexBuffer(model->m_meshes[i].m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        deviceContext->DrawIndexed(model->m_meshes[i].m_indexCount, 0, 0);
     }
 }
 
 Matrix Node::GetParentWorldTransform(const Node* parentNode)
 {
-    Matrix parentLocalTM = parentNode->m_NodeLocalTM;
+    Matrix parentLocalTM = parentNode->m_nodeLocalTM;
 
-    if (parentNode->m_ParentNode != nullptr)
+    if (parentNode->m_parentNode != nullptr)
     {
-        Matrix parentWorldTM = parentLocalTM * GetParentWorldTransform(parentNode->m_ParentNode);
+        Matrix parentWorldTM = parentLocalTM * GetParentWorldTransform(parentNode->m_parentNode);
         return parentWorldTM;
     }
     else
@@ -168,7 +168,7 @@ Matrix Node::GetParentWorldTransform(const Node* parentNode)
 
 void Node::FindNodeAnimation(const aiScene* scene, const aiNode* node)
 {
-    m_Animation = new Animation();
+    m_animation = new Animation();
 
     if (scene->mNumAnimations > 0)
     {
@@ -178,10 +178,10 @@ void Node::FindNodeAnimation(const aiScene* scene, const aiNode* node)
             {
                 for (int j = 0; j < scene->mAnimations[i]->mNumChannels; j++)
                 {
-                    if (m_NodeName == scene->mAnimations[i]->mChannels[j]->mNodeName.C_Str())
+                    if (m_nodeName == scene->mAnimations[i]->mChannels[j]->mNodeName.C_Str())
                     {
                         aiNodeAnim* nodeAnimPtr = scene->mAnimations[i]->mChannels[j];
-                        m_Animation->Create(nodeAnimPtr);
+                        m_animation->Create(nodeAnimPtr);
                     }
                 }
             }

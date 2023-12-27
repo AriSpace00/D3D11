@@ -11,10 +11,10 @@ public:
     ~Bone();
 
 public:
-    string m_BoneName;
-    Matrix m_OffsetMatrix;
-    Matrix* m_NodeWorldMatrixPtr;
-    int m_BoneIndex;
+    string m_boneName;
+    Matrix m_offsetMatrix;
+    Matrix* m_nodeWorldMatrixPtr;
+    int m_boneIndex;
 
 public:
     void Create(aiBone* bone, int boneIndex);

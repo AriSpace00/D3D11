@@ -8,24 +8,24 @@
 #include <assimp/postprocess.h>
 
 Model::Model()
-    : m_Position(DirectX::XMMatrixIdentity())
-    , m_Rotation(DirectX::XMMatrixIdentity())
-    , m_Scale(DirectX::XMMatrixIdentity())
-    , m_IsEvaluate(true)
+    : m_position(DirectX::XMMatrixIdentity())
+    , m_rotation(DirectX::XMMatrixIdentity())
+    , m_scale(DirectX::XMMatrixIdentity())
+    , m_isEvaluate(true)
 {
 }
 
 Model::~Model()
 {
-    m_CBTransform->Release();
-    m_CBMaterial->Release();
-    m_CBMatrixPalette->Release();
-    m_AlphaBlendState->Release();
+    m_transformCB->Release();
+    m_materialCB->Release();
+    m_matrixPaletteCB->Release();
+    m_alphaBlendState->Release();
 }
 
 void Model::ReadFile(ID3D11Device* device, const std::string& path)
 {
-    if (IsFileLoad)
+    if (isFileLoad)
     {
         return;
     }
@@ -37,7 +37,7 @@ void Model::ReadFile(ID3D11Device* device, const std::string& path)
     if (lastSlash != std::string::npos && lastDot != std::string::npos)
     {
         std::wstring finalFilePath(path.begin(), path.end());
-        m_FileName = finalFilePath.substr(lastSlash + 1, lastDot - lastSlash - 1);
+        m_fileName = finalFilePath.substr(lastSlash + 1, lastDot - lastSlash - 1);
     }
 
     // FBX 파일 경로를 scene에 바인딩
@@ -53,10 +53,10 @@ void Model::ReadFile(ID3D11Device* device, const std::string& path)
     const aiScene* scene = importer.ReadFile(path, importFlags);
 
     // Mesh 정보 Create
-    m_Meshes.resize(scene->mNumMeshes);
+    m_meshes.resize(scene->mNumMeshes);
     for (unsigned int i = 0; i < scene->mNumMeshes; i++)
     {
-        m_Meshes[i].Create(device, scene->mMeshes[i]);
+        m_meshes[i].Create(device, scene->mMeshes[i]);
     }
 
     // Node 정보 Create
@@ -67,14 +67,14 @@ void Model::ReadFile(ID3D11Device* device, const std::string& path)
     }
 
     // Material 정보 Create
-    m_Materials.resize(scene->mNumMaterials);
+    m_materials.resize(scene->mNumMaterials);
     for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
     {
-        m_Materials[i].SetFileName(m_FileName);
-        m_Materials[i].Create(device, scene->mMaterials[i]);
+        m_materials[i].SetFileName(m_fileName);
+        m_materials[i].Create(device, scene->mMaterials[i]);
     }
 
-    IsFileLoad = true;
+    isFileLoad = true;
 
     importer.FreeScene();
 }
@@ -82,27 +82,27 @@ void Model::ReadFile(ID3D11Device* device, const std::string& path)
 void Model::Update(const float& deltaTime)
 {
     // 노드의 WorldTM을 Mesh의 WorldTM에 업데이트
-    for (int i = 0; i < m_Nodes.size(); i++)
+    for (int i = 0; i < m_nodes.size(); i++)
     {
-        m_Nodes[i]->Update(deltaTime, this);
+        m_nodes[i]->Update(deltaTime, this);
     }
 }
 
 void Model::Render(ID3D11DeviceContext* deviceContext)
 {
-    deviceContext->PSSetConstantBuffers(2, 1, &m_CBMaterial);
+    deviceContext->PSSetConstantBuffers(2, 1, &m_materialCB);
 
     // Mesh Render
     for (int i = 0; i < /*m_Nodes.size()*/1; i++)
     {
-        m_Nodes[i]->Render(deviceContext, this);
+        m_nodes[i]->Render(deviceContext, this);
     }
 }
 
 void Model::SetTransform(Matrix position, Matrix rotation, Matrix scale)
 {
-    m_Nodes[0]->m_NodeLocalTM = scale * rotation * position;
-    m_Position = position;
-    m_Rotation = rotation;
-    m_Scale = scale;
+    m_nodes[0]->m_nodeLocalTM = scale * rotation * position;
+    m_position = position;
+    m_rotation = rotation;
+    m_scale = scale;
 }

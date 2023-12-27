@@ -45,19 +45,19 @@ public:
     ~Mesh();
 
 public:
-    ID3D11Buffer* m_VertexBuffer;
-    ID3D11Buffer* m_IndexBuffer;
+    ID3D11Buffer* m_vertexBuffer;
+    ID3D11Buffer* m_indexBuffer;
 
-    UINT m_VertexBufferStride = 0;    // 버텍스 하나의 크기
-    UINT m_VertexBufferOffset = 0;    // 버텍스 버퍼의 오프셋
-    UINT m_VertexCount = 0;           // 버텍스 개수 
-    UINT m_IndexCount = 0;            // 인덱스 개수
-    UINT m_MaterialIndex = 0;         // 머테리얼 인덱스
+    UINT m_vertexBufferStride = 0;    // 버텍스 하나의 크기
+    UINT m_vertexBufferOffset = 0;    // 버텍스 버퍼의 오프셋
+    UINT m_vertexCount = 0;           // 버텍스 개수 
+    UINT m_indexCount = 0;            // 인덱스 개수
+    UINT m_materialIndex = 0;         // 머테리얼 인덱스
 
-    vector<Vertex> m_Vertices;
-    vector<Bone*> m_Bones;
-    vector<BoneVertexWeight> m_BoneWeightVertices;
-    vector<UINT> m_Indices;
+    vector<Vertex> m_vertices;
+    vector<Bone*> m_bones;
+    vector<BoneVertexWeight> m_boneWeightVertices;
+    vector<UINT> m_indices;
 
 private:
     void CreateVertexBuffer(ID3D11Device* device, const vector<Vertex>& vertices, UINT vertexCount);

@@ -75,12 +75,12 @@ void DemoApp::Render()
     m_DeviceContext->PSSetSamplers(0, 1, &m_SamplerLinear);
 
     // ViewMatrix, ProjectionMatrix 설정
-    m_Model->m_Transform.ViewMatrix = XMMatrixTranspose(m_ViewMatrix);
-    m_Model->m_Transform.ProjectionMatrix = XMMatrixTranspose(m_ProjectionMatrix);
+    m_Model->m_transform.ViewMatrix = XMMatrixTranspose(m_ViewMatrix);
+    m_Model->m_transform.ProjectionMatrix = XMMatrixTranspose(m_ProjectionMatrix);
 
-    m_DeviceContext->UpdateSubresource(m_Model->m_CBTransform, 0, nullptr, &m_Model->m_Transform, 0, 0);
-    m_DeviceContext->VSSetConstantBuffers(0, 1, &m_Model->m_CBTransform);
-    m_DeviceContext->PSSetConstantBuffers(0, 1, &m_Model->m_CBTransform);
+    m_DeviceContext->UpdateSubresource(m_Model->m_transformCB, 0, nullptr, &m_Model->m_transform, 0, 0);
+    m_DeviceContext->VSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
+    m_DeviceContext->PSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
 
     // Light 설정
     m_Light.Direction.Normalize();
@@ -109,8 +109,8 @@ bool DemoApp::InitD3D()
     swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     // 백 버퍼(텍스처)의 가로/세로 크기 설정
-    swapDesc.BufferDesc.Width = m_ClientWidth;
-    swapDesc.BufferDesc.Height = m_ClientHeight;
+    swapDesc.BufferDesc.Width = m_clientWidth;
+    swapDesc.BufferDesc.Height = m_clientHeight;
 
     // 화면 주사율 설정
     swapDesc.BufferDesc.RefreshRate.Numerator = 60;
@@ -143,16 +143,16 @@ bool DemoApp::InitD3D()
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    viewport.Width = (float)m_ClientWidth;
-    viewport.Height = (float)m_ClientHeight;
+    viewport.Width = (float)m_clientWidth;
+    viewport.Height = (float)m_clientHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     m_DeviceContext->RSSetViewports(1, &viewport);
 
     // 6. 뎁스 & 스텐실 뷰 생성
     D3D11_TEXTURE2D_DESC descDepth = {};
-    descDepth.Width = m_ClientWidth;
-    descDepth.Height = m_ClientHeight;
+    descDepth.Width = m_clientWidth;
+    descDepth.Height = m_clientHeight;
     descDepth.MipLevels = 1;
     descDepth.ArraySize = 1;
     descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -240,7 +240,7 @@ bool DemoApp::InitScene()
     bd.ByteWidth = sizeof(CB_Transform);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_CBTransform);
+    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_transformCB);
 
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(CB_DirectionalLight);
@@ -252,13 +252,13 @@ bool DemoApp::InitScene()
     bd.ByteWidth = sizeof(CB_Material);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_CBMaterial);
+    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_materialCB);
 
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(CB_MatrixPalette);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_CBMatrixPalette);
+    m_Device->CreateBuffer(&bd, nullptr, &m_Model->m_matrixPaletteCB);
 
     // Sample state 생성
     D3D11_SAMPLER_DESC sampDesc = {};
@@ -281,7 +281,7 @@ bool DemoApp::InitScene()
     m_ViewMatrix = XMMatrixLookToLH(m_Eye, m_At, m_Up);
 
     // 프로젝션 매트릭스 초기화
-    m_ProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_ClientWidth / (FLOAT)m_ClientHeight, 1.0f, 20000.0f);
+    m_ProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_clientWidth / (FLOAT)m_clientHeight, 1.0f, 20000.0f);
 
     // 7. 투명 처리를 위한 블렌드 상태 생성
     D3D11_BLEND_DESC blendDesc = {};
@@ -296,7 +296,7 @@ bool DemoApp::InitScene()
     blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-    m_Device->CreateBlendState(&blendDesc, &m_Model->m_AlphaBlendState);
+    m_Device->CreateBlendState(&blendDesc, &m_Model->m_alphaBlendState);
 
     // Get the frequency of the performance counter
     QueryPerformanceFrequency(&m_Frequency);
@@ -387,7 +387,7 @@ void DemoApp::RunImGUI()
         ImGui::SliderFloat("##cf", &m_CameraFar, 0.01f, 9999.9f);
         if (m_CameraNear < m_CameraFar)
         {
-            m_ProjectionMatrix = XMMatrixPerspectiveFovLH(fovRadius, m_ClientWidth / (FLOAT)m_ClientHeight, m_CameraNear, m_CameraFar);
+            m_ProjectionMatrix = XMMatrixPerspectiveFovLH(fovRadius, m_clientWidth / (FLOAT)m_clientHeight, m_CameraNear, m_CameraFar);
         }
 
         ImGui::End();
@@ -410,13 +410,13 @@ void DemoApp::RunImGUI()
 
         ImGui::Text("[Material]");
         ImGui::Text("Material Ambient");
-        ImGui::ColorEdit4("##ma", (float*)&m_Model->m_Material.Ambient);
+        ImGui::ColorEdit4("##ma", (float*)&m_Model->m_material.Ambient);
         ImGui::Text("Material Diffuse");
-        ImGui::ColorEdit4("##md", (float*)&m_Model->m_Material.Diffuse);
+        ImGui::ColorEdit4("##md", (float*)&m_Model->m_material.Diffuse);
         ImGui::Text("Material Specular");
-        ImGui::ColorEdit4("##ms", (float*)&m_Model->m_Material.Specular);
+        ImGui::ColorEdit4("##ms", (float*)&m_Model->m_material.Specular);
         ImGui::Text("Material Specular Power");
-        ImGui::SliderFloat("##sp", &m_Model->m_Material.SpecularPower, 2.0f, 4096.0f);
+        ImGui::SliderFloat("##sp", &m_Model->m_material.SpecularPower, 2.0f, 4096.0f);
 
         ImGui::End();
     }

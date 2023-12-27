@@ -20,15 +20,15 @@ public:
     ~Animation();
 
 public:
-    int m_CurKeyIndex = 0;
-    int m_NextKeyIndex = 0;
-    int m_AnimFps = 30;
-    float m_Duration = 0.0f;
+    int m_curKeyIndex = 0;
+    int m_nextKeyIndex = 0;
+    int m_animFps = 30;
+    float m_duration = 0.0f;
 
-    string m_NodeName;
-    vector<AnimationKey*> m_AnimationKeys;
+    string m_nodeName;
+    vector<AnimationKey*> m_animationKeys;
 
-    Matrix m_InterpolationTM;
+    Matrix m_interpolationTM;
 
 public:
     void Create(const aiNodeAnim* nodeAnim);

@@ -18,8 +18,8 @@ public:
     HINSTANCE m_hInstance;                  
     WNDCLASSEXW m_wcex;
 
-    UINT m_ClientWidth;
-    UINT m_ClientHeight;
+    UINT m_clientWidth;
+    UINT m_clientHeight;
 
 public:
     virtual bool Initialize(UINT width, UINT height);

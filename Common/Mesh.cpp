@@ -24,12 +24,12 @@ void Mesh::CreateVertexBuffer(ID3D11Device* device, const vector<Vertex>& vertic
     // 버텍스 버퍼 생성
     D3D11_SUBRESOURCE_DATA vbData = {};
     vbData.pSysMem = vertices.data();
-    device->CreateBuffer(&bd, &vbData, &m_VertexBuffer);
+    device->CreateBuffer(&bd, &vbData, &m_vertexBuffer);
 
     // 버텍스 버퍼 정보
-    m_VertexCount = vertexCount;
-    m_VertexBufferStride = sizeof(Vertex);
-    m_VertexBufferOffset = 0;
+    m_vertexCount = vertexCount;
+    m_vertexBufferStride = sizeof(Vertex);
+    m_vertexBufferOffset = 0;
 }
 
 void Mesh::CreateBoneVertexWeightBuffer(ID3D11Device* device, const vector<BoneVertexWeight>& vertices,
@@ -44,12 +44,12 @@ void Mesh::CreateBoneVertexWeightBuffer(ID3D11Device* device, const vector<BoneV
     // 버텍스 버퍼 생성
     D3D11_SUBRESOURCE_DATA vbData = {};
     vbData.pSysMem = vertices.data();
-    device->CreateBuffer(&bd, &vbData, &m_VertexBuffer);
+    device->CreateBuffer(&bd, &vbData, &m_vertexBuffer);
 
     // 버텍스 버퍼 정보
-    m_VertexCount = vertexCount;
-    m_VertexBufferStride = sizeof(BoneVertexWeight);
-    m_VertexBufferOffset = 0;
+    m_vertexCount = vertexCount;
+    m_vertexBufferStride = sizeof(BoneVertexWeight);
+    m_vertexBufferOffset = 0;
 }
 
 void Mesh::CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, UINT indexCount)
@@ -63,29 +63,29 @@ void Mesh::CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, 
     // 인덱스 버퍼 생성
     D3D11_SUBRESOURCE_DATA ibData = {};
     ibData.pSysMem = indices.data();
-    device->CreateBuffer(&bd, &ibData, &m_IndexBuffer);
+    device->CreateBuffer(&bd, &ibData, &m_indexBuffer);
 
     // 인덱스 버퍼 정보
-    m_IndexCount = indexCount;
+    m_indexCount = indexCount;
 }
 
 void Mesh::Create(ID3D11Device* device, aiMesh* mesh)
 {
-    m_MaterialIndex = mesh->mMaterialIndex;
+    m_materialIndex = mesh->mMaterialIndex;
 
     if (mesh->HasBones())
     {
-        m_BoneWeightVertices.resize(mesh->mNumVertices);
+        m_boneWeightVertices.resize(mesh->mNumVertices);
 
         for (UINT i = 0; i < mesh->mNumVertices; i++)
         {
-            m_BoneWeightVertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-            m_BoneWeightVertices[i].Texcoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-            m_BoneWeightVertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-            m_BoneWeightVertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+            m_boneWeightVertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+            m_boneWeightVertices[i].Texcoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+            m_boneWeightVertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            m_boneWeightVertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
         }
 
-        m_Bones.resize(mesh->mNumBones);
+        m_bones.resize(mesh->mNumBones);
 
         int boneIndexCounter = 0;
         map<string, int> BoneMapping;
@@ -102,8 +102,8 @@ void Mesh::Create(ID3D11Device* device, aiMesh* mesh)
                 boneIndex = boneIndexCounter;
                 boneIndexCounter++;
 
-                m_Bones[boneIndex] = new Bone();
-                m_Bones[boneIndex]->Create(aiBoneRef, i);
+                m_bones[boneIndex] = new Bone();
+                m_bones[boneIndex]->Create(aiBoneRef, i);
 
                 BoneMapping[boneName] = boneIndex;
             }
@@ -117,39 +117,39 @@ void Mesh::Create(ID3D11Device* device, aiMesh* mesh)
                 unsigned int vertexID = aiBoneRef->mWeights[j].mVertexId;
                 float weight = aiBoneRef->mWeights[j].mWeight;
 
-                m_BoneWeightVertices[vertexID].AddBoneData(boneIndex, weight);
+                m_boneWeightVertices[vertexID].AddBoneData(boneIndex, weight);
             }
         }
-        CreateBoneVertexWeightBuffer(device, m_BoneWeightVertices, mesh->mNumVertices);
+        CreateBoneVertexWeightBuffer(device, m_boneWeightVertices, mesh->mNumVertices);
     }
     else
     {
-        m_Vertices.resize(mesh->mNumVertices);
+        m_vertices.resize(mesh->mNumVertices);
         for (UINT i = 0; i < mesh->mNumVertices; i++)
         {
-            m_Vertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-            m_Vertices[i].Texcoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-            m_Vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-            m_Vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+            m_vertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+            m_vertices[i].Texcoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+            m_vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            m_vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
         }
-        CreateVertexBuffer(device, m_Vertices, mesh->mNumVertices);
+        CreateVertexBuffer(device, m_vertices, mesh->mNumVertices);
     }
 
-    m_Indices.resize(mesh->mNumFaces * 3);
+    m_indices.resize(mesh->mNumFaces * 3);
     for (UINT i = 0; i < mesh->mNumFaces; i++)
     {
-        m_Indices[i * 3 + 0] = mesh->mFaces[i].mIndices[0];
-        m_Indices[i * 3 + 1] = mesh->mFaces[i].mIndices[1];
-        m_Indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
+        m_indices[i * 3 + 0] = mesh->mFaces[i].mIndices[0];
+        m_indices[i * 3 + 1] = mesh->mFaces[i].mIndices[1];
+        m_indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
     }
-    CreateIndexBuffer(device, m_Indices, mesh->mNumFaces * 3);
+    CreateIndexBuffer(device, m_indices, mesh->mNumFaces * 3);
 }
 
 void Mesh::UpdateMatrixPalette(Matrix* matrixPalettePtr)
 {
-    assert(m_Bones.size() < 128);
-    for (int i = 0; i < m_Bones.size(); i++)
+    assert(m_bones.size() < 128);
+    for (int i = 0; i < m_bones.size(); i++)
     {
-        matrixPalettePtr[i] = (m_Bones[i]->m_OffsetMatrix * *m_Bones[i]->m_NodeWorldMatrixPtr).Transpose();
+        matrixPalettePtr[i] = (m_bones[i]->m_offsetMatrix * *m_bones[i]->m_nodeWorldMatrixPtr).Transpose();
     }
 }

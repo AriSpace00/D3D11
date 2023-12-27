@@ -17,17 +17,17 @@ public:
     ~Node();
 
 public:
-    string m_NodeName;
+    string m_nodeName;
 
-    Matrix m_NodeLocalTM;
-    Matrix m_NodeWorldTM;
+    Matrix m_nodeLocalTM;
+    Matrix m_nodeWorldTM;
 
-    Animation* m_Animation;
+    Animation* m_animation;
 
-    Node* m_ParentNode;
+    Node* m_parentNode;
 
-    vector<Node> m_Children;
-    vector<Mesh> m_Meshes;
+    vector<Node> m_children;
+    vector<Mesh> m_meshes;
 
 public:
     void Create(ID3D11Device* device, Model* model, const aiScene* scene, const aiNode* node);
