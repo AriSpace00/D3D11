@@ -15,12 +15,12 @@ ResourceManager::~ResourceManager()
 {
 }
 
-std::shared_ptr<StaticMeshResource> ResourceManager::CreateStaticMeshResource(std::string filePath)
+std::shared_ptr<StaticMesh> ResourceManager::CreateStaticMeshResource(std::string filePath)
 {
     auto it = m_staticMeshMap.find(filePath);
     if (it != m_staticMeshMap.end())
     {
-        std::shared_ptr<StaticMeshResource> resourcePtr = it->second.lock();
+        std::shared_ptr<StaticMesh> resourcePtr = it->second.lock();
         if (resourcePtr)
         {
             return resourcePtr;
@@ -38,8 +38,8 @@ std::shared_ptr<StaticMeshResource> ResourceManager::CreateStaticMeshResource(st
         return nullptr;
     }
 
-    std::shared_ptr<StaticMeshResource> resourcePtr = std::make_shared<StaticMeshResource>();
-    resourcePtr->Create(filePath.c_str());
+    std::shared_ptr<StaticMesh> resourcePtr = std::make_shared<StaticMesh>();
+    resourcePtr->CreateResource(filePath.c_str());
     m_staticMeshMap[filePath] = resourcePtr;
     LOG_MESSAGEA("Complete file : %s", filePath.c_str());
     return resourcePtr;
@@ -73,7 +73,7 @@ std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string filePath)
     }
 
     std::shared_ptr<Material> resourcePtr = std::make_shared<Material>();
-    resourcePtr->Create(filePath.c_str());
+    resourcePtr->CreateResource(filePath.c_str());
     m_materialMap[filePath] = resourcePtr;
     LOG_MESSAGEA("Complete file : %s", filePath.c_str());
     return resourcePtr;

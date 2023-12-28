@@ -27,6 +27,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="D3DRenderManager.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="SkeletalMeshComponent.h" />
     <ClInclude Include="StaticMeshActor.h" />
     <ClInclude Include="StaticMeshComponent.h" />
+    <ClInclude Include="StaticMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -51,6 +53,7 @@
     </ClCompile>
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="D3DRenderManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -60,6 +63,7 @@
     <ClCompile Include="SkeletalMeshComponent.cpp" />
     <ClCompile Include="StaticMeshActor.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
+    <ClCompile Include="StaticMesh.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

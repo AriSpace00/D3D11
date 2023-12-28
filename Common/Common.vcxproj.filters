@@ -57,6 +57,27 @@
     <Filter Include="소스 파일\Actor\SkeletalMeshActor">
       <UniqueIdentifier>{246a440d-2a00-4173-91ab-3f9fa05a7591}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Resource\SkeletalMesh">
+      <UniqueIdentifier>{f7bdb58c-8dc7-4082-9a85-7342f758667d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\StaticMesh">
+      <UniqueIdentifier>{96cea3c6-7ca4-4d29-aa74-5ac98ffbe63f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Material">
+      <UniqueIdentifier>{aceb7a80-145a-4bc1-a7d1-c0ecc7ad8e19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Bone">
+      <UniqueIdentifier>{e2af69f7-e83a-43db-a072-a6b395148284}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Animation">
+      <UniqueIdentifier>{5862e7b8-ea9e-4f17-af8c-e9d0915a9dda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Resource\Node">
+      <UniqueIdentifier>{efec70f9-d831-421b-9762-5876168b86fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\D3DRenderManager">
+      <UniqueIdentifier>{91dc7b62-dba9-45e2-8374-6a311ffb1fdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -70,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="Bone.h">
       <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>소스 파일\Model\Material</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>소스 파일\Model\Animation</Filter>
@@ -104,7 +122,18 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>소스 파일\Manager\ResourceManager</Filter>
     </ClInclude>
-    <ClInclude Include="StaticMeshActor.h" />
+    <ClInclude Include="StaticMeshActor.h">
+      <Filter>소스 파일\Actor\StaticMeshActor</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMesh.h">
+      <Filter>소스 파일\Resource\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>소스 파일\Resource\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DRenderManager.h">
+      <Filter>소스 파일\Manager\D3DRenderManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -115,9 +144,6 @@
     </ClCompile>
     <ClCompile Include="Bone.cpp">
       <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>소스 파일\Model\Material</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>소스 파일\Model\Animation</Filter>
@@ -147,7 +173,16 @@
       <Filter>소스 파일\Manager\ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshActor.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Actor\StaticMeshActor</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMesh.cpp">
+      <Filter>소스 파일\Resource\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>소스 파일\Resource\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DRenderManager.cpp">
+      <Filter>소스 파일\Manager\D3DRenderManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
