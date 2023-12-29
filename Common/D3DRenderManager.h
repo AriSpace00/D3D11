@@ -11,6 +11,37 @@ struct CB_DirectionalLight
     float DL_pad1;
 };
 
+struct CB_Transform
+{
+    Matrix WorldMatrix;
+    Matrix ViewMatrix;
+    Matrix ProjectionMatrix;
+};
+
+struct CB_Material
+{
+    Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };
+    Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
+    Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
+    Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };
+    float Metalic;
+    float Roughness;
+    float SpecularPower = 80;
+    float UseDiffuseMap;
+    float UseNormalMap;
+    float UseSpecularMap;
+    float UseEmissiveMap;
+    float UseOpacityMap;
+    float UseMetalicMap;
+    float UseRoughnessMap;
+    Vector2 Material_pad0;
+};
+
+struct CB_MatrixPalette
+{
+    Matrix Array[128];
+};
+
 class D3DRenderManager
 {
 public:
@@ -32,9 +63,17 @@ public:
     ID3D11PixelShader* m_pixelShader = nullptr;
     ID3D11InputLayout* m_inputLayout = nullptr;
     ID3D11SamplerState* m_samplerLinear = nullptr;
+    ID3D11BlendState* m_alphaBlendState = nullptr;
 
     ID3D11Buffer* m_directionalLightCB = nullptr;
+    ID3D11Buffer* m_transformCB = nullptr;
+    ID3D11Buffer* m_materialCB = nullptr;
+    ID3D11Buffer* m_matrixPaletteCB = nullptr;
+
     CB_DirectionalLight m_light;
+    CB_Transform m_transform;
+    CB_Material m_material;
+    CB_MatrixPalette m_matrixPalette;
 
     UINT m_vertexBufferStride = 0;
     UINT m_vertexBufferOffset = 0;
@@ -51,7 +90,4 @@ public:
     void UnInitialize();
     void Update();
     void Render();
-
-    bool InitImGUI();
-    void UnInitImGUI();
 };

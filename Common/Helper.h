@@ -14,6 +14,16 @@
     OutputDebugStringA(buffer); \
 }
 
+template <typename T>
+void SAFE_RELEASE(T* p)
+{
+	if (p)
+	{
+		auto result = p->Release();
+		p = nullptr;
+	}
+}
+
 inline std::wstring ToWString(const std::string& s)
 {
 	std::wstring wsTmp(s.begin(), s.end());
@@ -62,3 +72,4 @@ inline HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoin
 
 	return S_OK;
 }
+

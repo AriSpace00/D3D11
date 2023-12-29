@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "D3DRenderManager.h"
+#include "Helper.h"
 
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
+
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
 
@@ -15,6 +17,7 @@ D3DRenderManager::D3DRenderManager()
 
 D3DRenderManager::~D3DRenderManager()
 {
+    UnInitialize();
 }
 
 bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
@@ -100,41 +103,114 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 
     m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
+    // 7. 상수 버퍼 생성
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(CB_Transform);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    m_device->CreateBuffer(&bd, nullptr, &m_transformCB);
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(CB_DirectionalLight);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    m_device->CreateBuffer(&bd, nullptr, &m_directionalLightCB);
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(CB_Material);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    m_device->CreateBuffer(&bd, nullptr, &m_materialCB);
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(CB_MatrixPalette);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    m_device->CreateBuffer(&bd, nullptr, &m_matrixPaletteCB);
+
+    // 8. Sample state 생성
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    m_device->CreateSamplerState(&sampDesc, &m_samplerLinear);
+
+    // 9. 투명 처리를 위한 블렌드 상태 생성
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = false;
+    blendDesc.IndependentBlendEnable = false;
+    blendDesc.RenderTarget[0].BlendEnable = true;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    m_device->CreateBlendState(&blendDesc, &m_alphaBlendState);
+
     return true;
 }
 
 void D3DRenderManager::UnInitialize()
 {
+    SAFE_RELEASE(m_directionalLightCB);
+    SAFE_RELEASE(m_transformCB);
+    SAFE_RELEASE(m_materialCB);
+    SAFE_RELEASE(m_matrixPaletteCB);
+    SAFE_RELEASE(m_samplerLinear);
+    SAFE_RELEASE(m_alphaBlendState);
+
+    SAFE_RELEASE(m_renderTargetView);
+    SAFE_RELEASE(m_depthStencilView);
+    SAFE_RELEASE(m_deviceContext);
+    SAFE_RELEASE(m_swapChain);
+    SAFE_RELEASE(m_device);
 }
 
 void D3DRenderManager::Update()
 {
+    // 카메라 업데이트
+    // 메쉬 컬링
 }
 
 void D3DRenderManager::Render()
 {
-}
+    // ImGUI 때문에 SwapChain은 여기서 진행
 
-bool D3DRenderManager::InitImGUI()
-{
-    // ImGui 초기화
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
 
-    // ImGui 스타일 설정
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    // 화면 칠하기
+    m_deviceContext->ClearRenderTargetView(m_renderTargetView, m_ClearColor);
+    m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // 플랫폼, 렌더러 설정
-    ImGui_ImplWin32_Init(m_hWnd);
-    ImGui_ImplDX11_Init(m_device, m_deviceContext);
+    // Draw 계열 함수를 호출하기 전에 렌더링 파이프라인에 필수 스테이지 설정을 해야한다.
+    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_deviceContext->IASetInputLayout(m_inputLayout);
 
-    return true;
-}
+    m_deviceContext->VSSetShader(m_vertexShader, nullptr, 0);
+    m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
 
-void D3DRenderManager::UnInitImGUI()
-{
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    m_deviceContext->PSSetConstantBuffers(1, 1, &m_directionalLightCB);
+
+    m_deviceContext->PSSetSamplers(0, 1, &m_samplerLinear);
+
+    // ViewMatrix, ProjectionMatrix 설정
+    m_Model->m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_viewMatrix);
+    m_Model->m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_projectionMatrix);
+
+    m_deviceContext->UpdateSubresource(m_Model->m_transformCB, 0, nullptr, &m_Model->m_transform, 0, 0);
+    m_deviceContext->VSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
+    m_deviceContext->PSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
+
+    // Light 설정
+    m_light.Direction.Normalize();
+    m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
+
+    // Model Render
+    m_Model->Render(m_deviceContext);
 }
