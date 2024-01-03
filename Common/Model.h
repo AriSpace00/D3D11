@@ -5,36 +5,36 @@
 #include "Material.h"
 #include "Animation.h"
 
-struct CB_Transform
-{
-    Matrix WorldMatrix;
-    Matrix ViewMatrix;
-    Matrix ProjectionMatrix;
-};
-
-struct CB_Material
-{
-    Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };
-    Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
-    Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
-    Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };
-    float Metalic;
-    float Roughness;
-    float SpecularPower = 80;
-    float UseDiffuseMap;
-    float UseNormalMap;
-    float UseSpecularMap;
-    float UseEmissiveMap;
-    float UseOpacityMap;
-    float UseMetalicMap;
-    float UseRoughnessMap;
-    Vector2 Material_pad0;
-};
-
-struct CB_MatrixPalette
-{
-    Matrix Array[128];
-};
+//struct CB_Transform
+//{
+//    Matrix WorldMatrix;
+//    Matrix ViewMatrix;
+//    Matrix ProjectionMatrix;
+//};
+//
+//struct CB_Material
+//{
+//    Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };
+//    Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
+//    Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
+//    Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };
+//    float Metalic;
+//    float Roughness;
+//    float SpecularPower = 80;
+//    float UseDiffuseMap;
+//    float UseNormalMap;
+//    float UseSpecularMap;
+//    float UseEmissiveMap;
+//    float UseOpacityMap;
+//    float UseMetalicMap;
+//    float UseRoughnessMap;
+//    Vector2 Material_pad0;
+//};
+//
+//struct CB_MatrixPalette
+//{
+//    Matrix Array[128];
+//};
 
 class Node;
 
@@ -53,9 +53,9 @@ public:
     std::wstring m_fileName;
     bool isFileLoad;
 
-    CB_Transform m_transform;
+    /*CB_Transform m_transform;
     CB_Material m_material;
-    CB_MatrixPalette m_matrixPalette;
+    CB_MatrixPalette m_matrixPalette;*/
 
     ID3D11Buffer* m_transformCB = nullptr;                  
     ID3D11Buffer* m_materialCB = nullptr;                   

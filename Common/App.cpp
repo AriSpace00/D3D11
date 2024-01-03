@@ -11,7 +11,7 @@ LRESULT DefaultWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 App::App(HINSTANCE hInstance)
     : m_hInstance(hInstance)
-    , m_szTitle(L"New Window")
+    , m_szTitle(L"4Q D3D 연습용 엔진")
     , m_szWindowClass(L"App")
 {
     App::m_Instance = this;
@@ -47,9 +47,9 @@ bool App::Initialize(UINT width, UINT height)
     int windowPosY = (m_ScreenHeight / 2) - ((rcClient.bottom - rcClient.top) / 2);
 
     m_hWnd = CreateWindowW(m_szWindowClass, m_szTitle, WS_OVERLAPPEDWINDOW,
-        windowPosX, windowPosY,                                 
-        rcClient.right - rcClient.left,                         
-        rcClient.bottom - rcClient.top,                         
+        windowPosX, windowPosY,
+        rcClient.right - rcClient.left,
+        rcClient.bottom - rcClient.top,
         nullptr, nullptr, m_hInstance, nullptr);
 
     if (!m_hWnd)
@@ -57,6 +57,11 @@ bool App::Initialize(UINT width, UINT height)
 
     ShowWindow(m_hWnd, SW_SHOW);
     UpdateWindow(m_hWnd);
+
+    if (!m_renderer.Initialize(m_hWnd, width, height))
+    {
+        return false;
+    }
 
     return true;
 }
@@ -70,7 +75,7 @@ bool App::Run()
             if (m_msg.message == WM_QUIT)
                 break;
 
-            TranslateMessage(&m_msg);   
+            TranslateMessage(&m_msg);
             DispatchMessage(&m_msg);
         }
         else
@@ -84,10 +89,12 @@ bool App::Run()
 
 void App::Update()
 {
+    m_renderer.Update();
 }
 
 void App::Render()
 {
+    m_renderer.Render();
 }
 
 LRESULT App::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

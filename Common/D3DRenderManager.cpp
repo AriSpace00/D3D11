@@ -154,6 +154,9 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
     m_device->CreateBlendState(&blendDesc, &m_alphaBlendState);
 
+    // 10. ImGUI 초기화
+    InitImGUI();
+
     return true;
 }
 
@@ -171,6 +174,8 @@ void D3DRenderManager::UnInitialize()
     SAFE_RELEASE(m_deviceContext);
     SAFE_RELEASE(m_swapChain);
     SAFE_RELEASE(m_device);
+
+    UnInitImGUI();
 }
 
 void D3DRenderManager::Update()
@@ -181,11 +186,8 @@ void D3DRenderManager::Update()
 
 void D3DRenderManager::Render()
 {
-    // ImGUI 때문에 SwapChain은 여기서 진행
-
-
     // 화면 칠하기
-    m_deviceContext->ClearRenderTargetView(m_renderTargetView, m_ClearColor);
+    m_deviceContext->ClearRenderTargetView(m_renderTargetView, m_clearColor);
     m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Draw 계열 함수를 호출하기 전에 렌더링 파이프라인에 필수 스테이지 설정을 해야한다.
@@ -200,17 +202,60 @@ void D3DRenderManager::Render()
     m_deviceContext->PSSetSamplers(0, 1, &m_samplerLinear);
 
     // ViewMatrix, ProjectionMatrix 설정
-    m_Model->m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_viewMatrix);
-    m_Model->m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_projectionMatrix);
+    m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_viewMatrix);
+    m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_projectionMatrix);
 
-    m_deviceContext->UpdateSubresource(m_Model->m_transformCB, 0, nullptr, &m_Model->m_transform, 0, 0);
-    m_deviceContext->VSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
-    m_deviceContext->PSSetConstantBuffers(0, 1, &m_Model->m_transformCB);
+    m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+    m_deviceContext->VSSetConstantBuffers(0, 1, &m_transformCB);
+    m_deviceContext->PSSetConstantBuffers(0, 1, &m_transformCB);
 
     // Light 설정
-    m_light.Direction.Normalize();
+    m_light.Direction.Normalize(); 
     m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
 
-    // Model Render
-    m_Model->Render(m_deviceContext);
+    RenderImGUI();
+
+    m_swapChain->Present(0, 0);
+}
+
+bool D3DRenderManager::InitImGUI()
+{
+    // ImGui 초기화
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    // ImGui 스타일 설정
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // 플랫폼, 렌더러 설정
+    ImGui_ImplWin32_Init(m_hWnd);
+    ImGui_ImplDX11_Init(m_device, m_deviceContext);
+
+    return true;
+}
+
+void D3DRenderManager::UnInitImGUI()
+{
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+}
+
+void D3DRenderManager::RenderImGUI()
+{
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    {
+        ImGui::Begin("D3D Renderer에서의 ImGui 테스트");
+        ImGui::End();
+    }
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

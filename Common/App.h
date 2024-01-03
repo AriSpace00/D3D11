@@ -1,4 +1,6 @@
 #pragma once
+#include "D3DRenderManager.h"
+
 #define MAX_LOADSTRING 100
 
 class App
@@ -20,6 +22,8 @@ public:
 
     UINT m_clientWidth;
     UINT m_clientHeight;
+
+    D3DRenderManager m_renderer;
 
 public:
     virtual bool Initialize(UINT width, UINT height);

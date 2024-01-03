@@ -1,4 +1,6 @@
 #pragma once
+#include <directxtk/SimpleMath.h>
+using namespace DirectX::SimpleMath;
 
 struct CB_DirectionalLight
 {
@@ -85,9 +87,15 @@ public:
     DirectX::XMVECTOR m_at;
     DirectX::XMVECTOR m_up;
 
+    const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
 public:
     bool Initialize(HWND hWnd, UINT width, UINT height);
     void UnInitialize();
     void Update();
     void Render();
+
+    bool InitImGUI();
+    void UnInitImGUI();
+    void RenderImGUI();
 };

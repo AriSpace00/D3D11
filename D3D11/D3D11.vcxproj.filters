@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\ImGUI">
-      <UniqueIdentifier>{b2ae83c7-7c66-4907-8bd2-df58cb5afa50}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{2cc43e07-d6e9-4872-9183-90ec5095c975}</UniqueIdentifier>
     </Filter>
@@ -26,9 +23,6 @@
     <ClInclude Include="DemoApp.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ImGUI.h">
-      <Filter>소스 파일\ImGUI</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -36,9 +30,6 @@
     </ClCompile>
     <ClCompile Include="DemoApp.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI.cpp">
-      <Filter>소스 파일\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
