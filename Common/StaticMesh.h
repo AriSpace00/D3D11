@@ -50,6 +50,6 @@ public:
     std::vector<Material> m_materials;
 
 public:
-    void CreateResource(ID3D11Device* device, const std::string& path);
+    void Create(const std::string& path);
 };
 

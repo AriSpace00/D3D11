@@ -24,7 +24,7 @@ public:
     ID3D11ShaderResourceView* m_roughnessRV = nullptr;        // 텍스처 오파시티맵 리소스 뷰
 
 public:
-    void Create(ID3D11Device* device, aiMaterial* material);
+    void Create(aiMaterial* material);
     void SetFileName(const std::wstring& fileName);
 };
 

@@ -71,7 +71,7 @@ void Model::ReadFile(ID3D11Device* device, const std::string& path)
     for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
     {
         m_materials[i].SetFileName(m_fileName);
-        m_materials[i].Create(device, scene->mMaterials[i]);
+        m_materials[i].Create(scene->mMaterials[i]);
     }
 
     isFileLoad = true;
