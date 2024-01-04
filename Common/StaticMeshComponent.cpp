@@ -1,33 +1,51 @@
 #include "pch.h"
 #include "StaticMeshComponent.h"
-
+#include "D3DRenderManager.h"
 #include "ResourceManager.h"
+#include "StaticMesh.h"
 
 StaticMeshComponent::StaticMeshComponent()
 {
+	/// TODO : D3DRenderManager에 Static Mesh Component 추가
 }
 
 StaticMeshComponent::~StaticMeshComponent()
 {
+	/// TODO : D3DRenderManager의 Static Mesh Component 제거
 }
 
 void StaticMeshComponent::Update(float deltaTime)
 {
-    SceneComponent::Update(deltaTime);
+	SceneComponent::Update(deltaTime);
+}
+
+void StaticMeshComponent::OnBeginPlay()
+{
+	if (!m_filePath.empty())
+	{
+		ReadResource(m_filePath);
+	}
+}
+
+void StaticMeshComponent::OnEndPlay()
+{
 }
 
 bool StaticMeshComponent::ReadResource(std::string filePath)
 {
-    std::shared_ptr<StaticMesh> resourcePtr = ResourceManager::m_instance->CreateStaticMeshResource(filePath);
-    if (resourcePtr == nullptr)
-    {
-        return false;
-    }
-    SetResource(resourcePtr);
-    return true;
+	std::shared_ptr<StaticMeshResource> resourcePtr = ResourceManager::m_instance->CreateStaticMeshResource(filePath);
+	if (resourcePtr == nullptr)
+	{
+		return false;
+	}
+	SetResource(resourcePtr);
+	return true;
 }
 
-void StaticMeshComponent::SetResource(std::shared_ptr<StaticMesh> resource)
+void StaticMeshComponent::SetResource(std::shared_ptr<StaticMeshResource> resource)
 {
+	assert(resource);
+	m_resource = resource;
+
 }
 

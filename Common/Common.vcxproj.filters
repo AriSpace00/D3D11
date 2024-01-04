@@ -15,9 +15,6 @@
     <Filter Include="소스 파일\Model\Mesh">
       <UniqueIdentifier>{e87fec41-4737-470d-84ae-9ec5d46a8fb1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Model\Material">
-      <UniqueIdentifier>{0c0f2832-4cbd-4bda-bcaf-bad02d97949f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Model\Animation">
       <UniqueIdentifier>{280a24c0-3594-4e4e-a9e3-1cf7ce8649b3}</UniqueIdentifier>
     </Filter>
@@ -78,6 +75,12 @@
     <Filter Include="소스 파일\Manager\D3DRenderManager">
       <UniqueIdentifier>{91dc7b62-dba9-45e2-8374-6a311ffb1fdf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\World">
+      <UniqueIdentifier>{afd82a75-865b-4089-91ea-e92e87f713b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Instance">
+      <UniqueIdentifier>{829f6e59-2b0c-40fa-89c4-79529207ced5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -134,6 +137,12 @@
     <ClInclude Include="D3DRenderManager.h">
       <Filter>소스 파일\Manager\D3DRenderManager</Filter>
     </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>소스 파일\World</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshInstance.h">
+      <Filter>소스 파일\Instance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -183,6 +192,12 @@
     </ClCompile>
     <ClCompile Include="D3DRenderManager.cpp">
       <Filter>소스 파일\Manager\D3DRenderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>소스 파일\World</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshInstance.cpp">
+      <Filter>소스 파일\Instance</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

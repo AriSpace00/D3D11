@@ -19,5 +19,7 @@ public:
     Actor* GetOwner();
 
     virtual void Update(float deltaTime) abstract;
+    virtual void OnBeginPlay() abstract;
+    virtual void OnEndPlay() abstract;
 };
 

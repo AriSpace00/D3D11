@@ -13,8 +13,8 @@ using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
 class ImGUI;
-class Model;
-class Mesh;
+//class Model;
+//class Mesh;
 class Material;
 
 class DemoApp :
@@ -34,8 +34,8 @@ public:
     float m_CameraNear;
     float m_CameraFar;
 
-    Model* m_Model;
-    std::vector<Mesh> m_Meshes;
+    //Model* m_Model;
+    //std::vector<Mesh> m_Meshes;
     std::vector<Material> m_Materials;
     float m_MeshScale = 1.0f;
     std::wstring m_FBXFileName;

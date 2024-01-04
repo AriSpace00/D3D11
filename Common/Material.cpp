@@ -2,6 +2,7 @@
 #include "Helper.h"
 #include "Material.h"
 #include "D3DRenderManager.h"
+#include "ResourceManager.h"
 
 #include <filesystem>
 
@@ -9,6 +10,20 @@
 
 #include <assimp/scene.h>
 #include <assimp/types.h>
+
+MaterialTexture::MaterialTexture()
+{
+}
+
+MaterialTexture::~MaterialTexture()
+{
+}
+
+void MaterialTexture::Create(const std::wstring& filePath)
+{
+    DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, filePath.c_str(), nullptr, &m_textureRV);
+    m_filePath = filePath;
+}
 
 Material::Material()
 {
@@ -56,49 +71,49 @@ void Material::Create(aiMaterial* material)
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_diffuseRV);
+        m_diffuseRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_NORMALS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_normalRV);
+        m_normalRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_SPECULAR, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_specularRV);
+        m_specularRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_EMISSIVE, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_emissiveRV);
+        m_emissiveRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_opacityRV);
+        m_opacityRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_METALNESS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_metalicRV);
+        m_metalicRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 
     if (AI_SUCCESS == material->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
     {
         path = ToWString(std::string(texturePath.C_Str()));
         std::wstring finalPath = folderPath + L"/" + path.filename().wstring();
-        DirectX::CreateWICTextureFromFile(D3DRenderManager::m_instance->m_device, finalPath.c_str(), nullptr, &m_roughnessRV);
+        m_roughnessRV = ResourceManager::m_instance->CreateMaterial(finalPath);
     }
 }
 

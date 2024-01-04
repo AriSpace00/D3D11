@@ -32,3 +32,11 @@ Actor* Component::GetOwner()
 void Component::Update(float deltaTime)
 {
 }
+
+void Component::OnBeginPlay()
+{
+}
+
+void Component::OnEndPlay()
+{
+}

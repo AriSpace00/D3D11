@@ -1,7 +1,9 @@
 #pragma once
 #include "SceneComponent.h"
 
-class StaticMesh;
+#include <memory>
+
+class StaticMeshResource;
 
 class StaticMeshComponent :
     public SceneComponent
@@ -12,14 +14,16 @@ public:
 
 public:
     std::string m_filePath;
-    std::shared_ptr<StaticMesh> m_resource;
+    std::shared_ptr<StaticMeshResource> m_resource;
 
     std::list<StaticMeshComponent*>::iterator m_iterator;
 
 public:
     virtual void Update(float deltaTime);
+    virtual void OnBeginPlay();
+    virtual void OnEndPlay();
 
     bool ReadResource(std::string filePath);
-    void SetResource(std::shared_ptr<StaticMesh> resource);
+    void SetResource(std::shared_ptr<StaticMeshResource> resource);
 };
 
