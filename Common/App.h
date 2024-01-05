@@ -1,8 +1,11 @@
 #pragma once
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
+#include "TimeManager.h"
 
 #define MAX_LOADSTRING 100
+
+class World;
 
 class App
 {
@@ -24,14 +27,19 @@ public:
     UINT m_clientWidth;
     UINT m_clientHeight;
 
+    World* m_currentWorld = nullptr;
+
     D3DRenderManager m_renderer;
     ResourceManager m_resource;
+    TimeManager m_timer;
 
 public:
     virtual bool Initialize(UINT width, UINT height);
     virtual bool Run();
     virtual void Update();
     virtual void Render();
+
+    void ChangeWorld(World* world);
 
     virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };

@@ -6,6 +6,8 @@
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
 
+#include "Material.h"
+
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
 
@@ -192,9 +194,9 @@ void D3DRenderManager::Render()
 
     // Draw 계열 함수를 호출하기 전에 렌더링 파이프라인에 필수 스테이지 설정을 해야한다.
     m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_deviceContext->IASetInputLayout(m_inputLayout);
+    m_deviceContext->IASetInputLayout(m_staticMeshIL);
 
-    m_deviceContext->VSSetShader(m_vertexShader, nullptr, 0);
+    m_deviceContext->VSSetShader(m_staticMeshVS, nullptr, 0);
     m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
 
     m_deviceContext->PSSetConstantBuffers(1, 1, &m_directionalLightCB);
@@ -258,4 +260,45 @@ void D3DRenderManager::RenderImGUI()
     }
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+void D3DRenderManager::ApplyMaterial(Material* material)
+{
+    if(material->m_diffuseRV)
+        m_deviceContext->PSSetShaderResources(1, 1, &(material->m_diffuseRV->m_textureRV));
+    if (material->m_specularRV)
+        m_deviceContext->PSSetShaderResources(2, 1, &(material->m_specularRV->m_textureRV));
+    if (material->m_emissiveRV)
+        m_deviceContext->PSSetShaderResources(3, 1, &(material->m_emissiveRV->m_textureRV));
+    if (material->m_opacityRV)
+        m_deviceContext->PSSetShaderResources(4, 1, &(material->m_opacityRV->m_textureRV));
+    if (material->m_metalicRV)
+        m_deviceContext->PSSetShaderResources(5, 1, &(material->m_metalicRV->m_textureRV));
+    if (material->m_roughnessRV)
+        m_deviceContext->PSSetShaderResources(6, 1, &(material->m_roughnessRV->m_textureRV));
+
+    m_material.UseDiffuseMap = material->m_diffuseRV->m_textureRV != nullptr ? true : false;
+    m_material.UseNormalMap = material->m_normalRV->m_textureRV != nullptr ? true : false;
+    m_material.UseSpecularMap = material->m_specularRV->m_textureRV != nullptr ? true : false;
+    m_material.UseEmissiveMap = material->m_emissiveRV->m_textureRV != nullptr ? true : false;
+    m_material.UseOpacityMap = material->m_opacityRV->m_textureRV != nullptr ? true : false;
+    m_material.UseMetalicMap = material->m_metalicRV->m_textureRV != nullptr ? true : false;
+    m_material.UseRoughnessMap = material->m_roughnessRV->m_textureRV != nullptr ? true : false;
+
+    if (m_material.UseOpacityMap && m_alphaBlendState != nullptr)
+        m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
+    else
+        m_deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+
+    m_deviceContext->UpdateSubresource(m_materialCB, 0, nullptr, &m_material, 0, 0);
+}
+
+void D3DRenderManager::AddMeshInstance(StaticMeshComponent* staticMesh)
+{
+    for(int i=0; i<staticMesh->m_meshInstances)
+    m_staticMeshComponents.push_back(staticMesh);
+}
+
+void D3DRenderManager::RenderStaticMeshInstance()
+{
 }

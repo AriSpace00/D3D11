@@ -22,5 +22,7 @@ void StaticMeshInstance::Create(StaticMesh* mesh, Matrix* worldTM, Material* mat
 
 void StaticMeshInstance::Render(ID3D11DeviceContext* deviceContext)
 {
-	deviceContext->IASetIndexBuffer(m_mesh->m_indexBuffer, )
+	deviceContext->IASetVertexBuffers(0, 1, &m_mesh->m_vertexBuffer, &m_mesh->m_vertexBufferStride, &m_mesh->m_vertexBufferOffset);
+	deviceContext->IASetIndexBuffer(m_mesh->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	deviceContext->DrawIndexed(m_mesh->m_indexCount, 0, 0);
 }

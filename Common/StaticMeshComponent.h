@@ -3,6 +3,7 @@
 
 #include <memory>
 
+class StaticMeshInstance;
 class StaticMeshResource;
 
 class StaticMeshComponent :
@@ -15,7 +16,7 @@ public:
 public:
     std::string m_filePath;
     std::shared_ptr<StaticMeshResource> m_resource;
-
+    std::vector<StaticMeshInstance> m_meshInstances;
     std::list<StaticMeshComponent*>::iterator m_iterator;
 
 public:

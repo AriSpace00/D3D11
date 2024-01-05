@@ -44,6 +44,10 @@ struct CB_MatrixPalette
     Matrix Array[128];
 };
 
+class Material;
+class StaticMeshInstance;
+class StaticMeshComponent;
+
 class D3DRenderManager
 {
 public:
@@ -53,7 +57,7 @@ public:
     static D3DRenderManager* m_instance;
 
 public:
-    HWND m_hWnd;
+    HWND m_hWnd = nullptr;
 
     ID3D11Device* m_device = nullptr;
     ID3D11DeviceContext* m_deviceContext = nullptr;
@@ -61,9 +65,10 @@ public:
     ID3D11DepthStencilView* m_depthStencilView = nullptr;
     IDXGISwapChain* m_swapChain = nullptr;
 
-    ID3D11VertexShader* m_vertexShader = nullptr;
+    ID3D11VertexShader* m_staticMeshVS = nullptr;
+    ID3D11InputLayout* m_staticMeshIL = nullptr;
+
     ID3D11PixelShader* m_pixelShader = nullptr;
-    ID3D11InputLayout* m_inputLayout = nullptr;
     ID3D11SamplerState* m_samplerLinear = nullptr;
     ID3D11BlendState* m_alphaBlendState = nullptr;
 
@@ -79,13 +84,18 @@ public:
 
     UINT m_vertexBufferStride = 0;
     UINT m_vertexBufferOffset = 0;
+    int m_indices = 0;
 
+    Matrix m_worldMatrix;
     Matrix m_viewMatrix;
     Matrix m_projectionMatrix;
 
     DirectX::XMVECTOR m_eye;
     DirectX::XMVECTOR m_at;
     DirectX::XMVECTOR m_up;
+
+    std::list<StaticMeshInstance*> m_staticMeshInstance;
+    std::list<StaticMeshComponent*> m_staticMeshComponents;
 
     const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
@@ -98,4 +108,11 @@ public:
     bool InitImGUI();
     void UnInitImGUI();
     void RenderImGUI();
+
+    void ApplyMaterial(Material* material);
+
+private:
+    void AddMeshInstance(StaticMeshComponent* staticMesh);
+
+    void RenderStaticMeshInstance();
 };

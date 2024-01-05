@@ -1,8 +1,9 @@
 #include "pch.h"
-#include "StaticMeshComponent.h"
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
 #include "StaticMesh.h"
+#include "StaticMeshComponent.h"
+#include "StaticMeshInstance.h"
 
 StaticMeshComponent::StaticMeshComponent()
 {
@@ -46,6 +47,16 @@ void StaticMeshComponent::SetResource(std::shared_ptr<StaticMeshResource> resour
 {
 	assert(resource);
 	m_resource = resource;
+
+	m_meshInstances.resize(m_resource->m_meshes.size());
+	for(int i=0; i<m_resource->m_meshes.size(); i++)
+	{
+		m_meshInstances[i].Create(&m_resource->m_meshes[i],
+			&m_worldTM,
+			m_resource->GetMeshMaterial(i));
+	}
+	
+	
 
 }
 

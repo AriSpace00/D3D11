@@ -10,7 +10,7 @@ public:
 public:
     SceneComponent* m_parent;
 
-private:
+protected:
     Matrix m_localTM;
     Matrix m_worldTM;
 
