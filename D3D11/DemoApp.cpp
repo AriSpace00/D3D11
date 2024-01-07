@@ -1,52 +1,62 @@
 #include "DemoApp.h"
 
-#include "Common/Helper.h"
-#include "Common/Model.h"
+#include "Common/World.h"
+#include "Common/StaticMeshActor.h"
+#include "Common/StaticMeshComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
 DemoApp::DemoApp(HINSTANCE hInstance)
-    : App(hInstance)
-    , m_CameraNear(1.0f)
-    , m_CameraFar(9999.9f)
-    , m_CameraFovYRadius(90.0f)
+	: App(hInstance)
 {
 }
 
 DemoApp::~DemoApp()
 {
+	DestroyStaticMesh();
 }
 
 bool DemoApp::Initialize(UINT width, UINT height)
 {
-    App::Initialize(width, height);
+	App::Initialize(width, height);
 
-    return true;
+	LoadStaticMesh();
+	ChangeWorld(&m_world);
+
+	return true;
 }
 
 void DemoApp::Update()
 {
-    App::Update();
-
-    QueryPerformanceCounter(&m_CurrentTime);
-    m_DeltaTime = static_cast<double>(m_CurrentTime.QuadPart - m_PrevTime.QuadPart) / m_Frequency.QuadPart;
-    m_PrevTime = m_CurrentTime;
-
-    //m_Model->Update(m_DeltaTime);
-
-    Matrix mSpin = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_Pitch), XMConvertToRadians(m_Yaw), XMConvertToRadians(m_Roll));
-    Matrix mScale = Matrix::CreateScale(m_MeshScale, m_MeshScale, m_MeshScale);
-    //m_Model->SetTransform(DirectX::XMMatrixIdentity(), mSpin, mScale);
-
+	App::Update();
 }
 
 void DemoApp::Render()
 {
-    App::Render();
+	App::Render();
 }
 
 LRESULT DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    return __super::WndProc(hWnd, message, wParam, lParam);
+	return __super::WndProc(hWnd, message, wParam, lParam);
+}
+
+void DemoApp::LoadStaticMesh()
+{
+	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
+	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
+	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/cerberus2.fbx");
+	stActor->SetWorldPosition(Vector3(0.0f, 0.0f, 0.0f));
+	m_spawnedActors.push_back(stActor.get());
+}
+
+void DemoApp::DestroyStaticMesh()
+{
+	auto it = m_spawnedActors.begin();
+	if (it == m_spawnedActors.end())
+		return;
+
+	m_world.DestroyGameObject(*it);
+	m_spawnedActors.erase(it);
 }

@@ -25,7 +25,7 @@ public:
 		if (m_isRun)
 			newObject->OnBeginPlay();
 
-		return newObject();
+		return newObject;
 	}
 
 	void DestroyGameObject(Actor* gameObject);

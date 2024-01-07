@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <map>
 
 class StaticMeshResource;
 class SkeletalMeshResource;

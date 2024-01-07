@@ -2,6 +2,8 @@
 #include <directxtk/SimpleMath.h>
 using namespace DirectX::SimpleMath;
 
+#include <list>
+
 struct CB_DirectionalLight
 {
     Vector3 Direction = { 0.0f,0.0f,1.0f };

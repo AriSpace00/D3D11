@@ -51,5 +51,6 @@ public:
 
 public:
     void Create(const std::string& path);
+    Material* GetMeshMaterial(UINT index);
 };
 

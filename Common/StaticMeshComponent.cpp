@@ -49,14 +49,11 @@ void StaticMeshComponent::SetResource(std::shared_ptr<StaticMeshResource> resour
 	m_resource = resource;
 
 	m_meshInstances.resize(m_resource->m_meshes.size());
-	for(int i=0; i<m_resource->m_meshes.size(); i++)
+	for (int i = 0; i < m_resource->m_meshes.size(); i++)
 	{
 		m_meshInstances[i].Create(&m_resource->m_meshes[i],
 			&m_worldTM,
 			m_resource->GetMeshMaterial(i));
 	}
-	
-	
-
 }
 

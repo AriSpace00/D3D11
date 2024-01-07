@@ -27,3 +27,8 @@ void StaticMeshActor::OnEndPlay()
 {
 	__super::OnEndPlay();
 }
+
+StaticMeshComponent* StaticMeshActor::GetStaticMeshComponent()
+{
+	return m_staticMeshComponent;
+}
