@@ -7,12 +7,14 @@
 
 StaticMeshComponent::StaticMeshComponent()
 {
-	/// TODO : D3DRenderManager에 Static Mesh Component 추가
+	D3DRenderManager::m_instance->m_staticMeshComponents.push_back(this);
+	m_iterator = --D3DRenderManager::m_instance->m_staticMeshComponents.end();
+	
 }
 
 StaticMeshComponent::~StaticMeshComponent()
 {
-	/// TODO : D3DRenderManager의 Static Mesh Component 제거
+	D3DRenderManager::m_instance->m_staticMeshComponents.erase(m_iterator);
 }
 
 void StaticMeshComponent::Update(float deltaTime)

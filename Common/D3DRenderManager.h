@@ -114,6 +114,9 @@ public:
     void ApplyMaterial(Material* material);
 
 private:
+    void CreateStaticMesh_VS_IL();
+    void CreatePS();
+
     void AddMeshInstance(StaticMeshComponent* staticMesh);
 
     void RenderStaticMeshInstance();

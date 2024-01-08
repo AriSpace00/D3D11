@@ -159,10 +159,14 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	m_device->CreateBlendState(&blendDesc, &m_alphaBlendState);
 
-	// 10. projectionMatrix 초기화
+	// 10. VertexShader, PixelShader, InputLayout 생성
+	CreateStaticMesh_VS_IL();
+	CreatePS();
+
+	// 11. projectionMatrix 초기화
 	m_transform.ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 20000.0f);
 
-	// 11. ImGUI 초기화
+	// 12. ImGUI 초기화
 	InitImGUI();
 
 	return true;
@@ -273,25 +277,46 @@ void D3DRenderManager::RenderImGUI()
 void D3DRenderManager::ApplyMaterial(Material* material)
 {
 	if (material->m_diffuseRV)
+	{
 		m_deviceContext->PSSetShaderResources(1, 1, &(material->m_diffuseRV->m_textureRV));
-	if (material->m_specularRV)
-		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_specularRV->m_textureRV));
-	if (material->m_emissiveRV)
-		m_deviceContext->PSSetShaderResources(3, 1, &(material->m_emissiveRV->m_textureRV));
-	if (material->m_opacityRV)
-		m_deviceContext->PSSetShaderResources(4, 1, &(material->m_opacityRV->m_textureRV));
-	if (material->m_metalicRV)
-		m_deviceContext->PSSetShaderResources(5, 1, &(material->m_metalicRV->m_textureRV));
-	if (material->m_roughnessRV)
-		m_deviceContext->PSSetShaderResources(6, 1, &(material->m_roughnessRV->m_textureRV));
+		m_material.UseDiffuseMap = material->m_diffuseRV->m_textureRV != nullptr ? true : false;
+	}
 
-	m_material.UseDiffuseMap = material->m_diffuseRV->m_textureRV != nullptr ? true : false;
-	m_material.UseNormalMap = material->m_normalRV->m_textureRV != nullptr ? true : false;
-	m_material.UseSpecularMap = material->m_specularRV->m_textureRV != nullptr ? true : false;
-	m_material.UseEmissiveMap = material->m_emissiveRV->m_textureRV != nullptr ? true : false;
-	m_material.UseOpacityMap = material->m_opacityRV->m_textureRV != nullptr ? true : false;
-	m_material.UseMetalicMap = material->m_metalicRV->m_textureRV != nullptr ? true : false;
-	m_material.UseRoughnessMap = material->m_roughnessRV->m_textureRV != nullptr ? true : false;
+	if (material->m_normalRV)
+	{
+		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_normalRV->m_textureRV));
+		m_material.UseNormalMap = material->m_normalRV->m_textureRV != nullptr ? true : false;
+	}
+
+	if (material->m_specularRV)
+	{
+		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_specularRV->m_textureRV));
+		m_material.UseSpecularMap = material->m_specularRV->m_textureRV != nullptr ? true : false;
+	}
+
+	if (material->m_emissiveRV)
+	{
+		m_deviceContext->PSSetShaderResources(3, 1, &(material->m_emissiveRV->m_textureRV));
+		m_material.UseEmissiveMap = material->m_emissiveRV->m_textureRV != nullptr ? true : false;
+	}
+
+	if (material->m_opacityRV)
+	{
+		m_deviceContext->PSSetShaderResources(4, 1, &(material->m_opacityRV->m_textureRV));
+		m_material.UseOpacityMap = material->m_opacityRV->m_textureRV != nullptr ? true : false;
+	}
+
+	if (material->m_metalicRV)
+	{
+		m_deviceContext->PSSetShaderResources(5, 1, &(material->m_metalicRV->m_textureRV));
+		m_material.UseMetalicMap = material->m_metalicRV->m_textureRV != nullptr ? true : false;
+	}
+
+	if (material->m_roughnessRV)
+	{
+		m_deviceContext->PSSetShaderResources(6, 1, &(material->m_roughnessRV->m_textureRV));
+		m_material.UseRoughnessMap = material->m_roughnessRV->m_textureRV != nullptr ? true : false;
+	}
 
 	if (m_material.UseOpacityMap && m_alphaBlendState != nullptr)
 		m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
@@ -299,6 +324,46 @@ void D3DRenderManager::ApplyMaterial(Material* material)
 		m_deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 
 	m_deviceContext->UpdateSubresource(m_materialCB, 0, nullptr, &m_material, 0, 0);
+}
+
+void D3DRenderManager::CreateStaticMesh_VS_IL()
+{
+	HRESULT hr;
+	ID3D10Blob* vertexShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"VertexShader.cso", &vertexShaderBuffer);
+	}
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"BlendIndices",    0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BlendWeights",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	hr = m_device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_staticMeshIL);
+
+	m_device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_staticMeshVS);
+	SAFE_RELEASE(vertexShaderBuffer);
+}
+
+void D3DRenderManager::CreatePS()
+{
+	HRESULT hr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
+	}
+
+	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	SAFE_RELEASE(pixelShaderBuffer);
 }
 
 void D3DRenderManager::AddMeshInstance(StaticMeshComponent* staticMesh)
