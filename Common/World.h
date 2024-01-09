@@ -30,7 +30,11 @@ public:
 
 	void DestroyGameObject(Actor* gameObject);
 	void Update(float deltaTime);
-	void OnBeginPlay();
+
+	// App::ChangeWorld() 에서 호출
+	// OnBeginPlay 해주는 시점에 world 내의 모든 리소스 읽어오려고 있는듯
+	// 지금은 DemoApp::Initalize() 에서 component 통해 리소스를 읽어오기 때문에 필요없을 것 같음 
+	void OnBeginPlay(); 
 	void OnEndPlay();
 };
 

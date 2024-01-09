@@ -105,6 +105,14 @@ void App::Render()
 
 void App::ChangeWorld(World* world)
 {
+	if (m_currentWorld)
+	{
+		m_currentWorld->OnEndPlay();
+	}
+	if (world)
+	{
+		world->OnBeginPlay();
+	}
 	m_currentWorld = world;
 }
 

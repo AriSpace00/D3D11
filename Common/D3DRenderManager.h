@@ -88,10 +88,6 @@ public:
     UINT m_vertexBufferOffset = 0;
     int m_indices = 0;
 
-    Matrix m_worldMatrix;
-    Matrix m_viewMatrix;
-    Matrix m_projectionMatrix;
-
     DirectX::XMVECTOR m_eye;
     DirectX::XMVECTOR m_at;
     DirectX::XMVECTOR m_up;

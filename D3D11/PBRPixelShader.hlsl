@@ -91,5 +91,5 @@ float4 main(PS_INPUT input) : SV_Target
     //float3 finalColor = PBR + Ambient;
     //finalColor = pow(finalColor, 1 / 2.2);
 
-    return float4(PBR, 1.0f);
+    return float4(Normal, 1.0f);
 }

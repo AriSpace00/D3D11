@@ -47,7 +47,7 @@ void DemoApp::LoadStaticMesh()
 	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
 	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/cerberus2.fbx");
-	stActor->SetWorldPosition(Vector3(0.0f, 0.0f, 0.0f));
+	stActor->SetWorldPosition(Vector3(0,300,0));
 	m_spawnedActors.push_back(stActor.get());
 }
 

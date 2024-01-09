@@ -114,24 +114,31 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	m_device->CreateBuffer(&bd, nullptr, &m_transformCB);
+	m_deviceContext->VSSetConstantBuffers(0, 1, &m_transformCB);
+	m_deviceContext->PSSetConstantBuffers(0, 1, &m_transformCB);
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_DirectionalLight);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	m_device->CreateBuffer(&bd, nullptr, &m_directionalLightCB);
+	m_deviceContext->PSSetConstantBuffers(1, 1, &m_directionalLightCB);
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_Material);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	m_device->CreateBuffer(&bd, nullptr, &m_materialCB);
+	m_deviceContext->VSSetConstantBuffers(2, 1, &m_materialCB);
+	m_deviceContext->PSSetConstantBuffers(2, 1, &m_materialCB);
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_MatrixPalette);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	m_device->CreateBuffer(&bd, nullptr, &m_matrixPaletteCB);
+	m_deviceContext->VSSetConstantBuffers(3, 1, &m_matrixPaletteCB);
+	m_deviceContext->PSSetConstantBuffers(3, 1, &m_matrixPaletteCB);
 
 	// 8. Sample state 생성 및 설정
 	D3D11_SAMPLER_DESC sampDesc = {};
@@ -163,7 +170,12 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	CreateStaticMesh_VS_IL();
 	CreatePS();
 
-	// 11. projectionMatrix 초기화
+	// 11. View, Projection 매트릭스 초기화
+	m_eye = DirectX::XMVectorSet(0.0f, 300.0f, -500.0f, 0.0f);
+	m_at = DirectX::XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
+	m_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 	m_transform.ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 20000.0f);
 
 	// 12. ImGUI 초기화
@@ -195,23 +207,13 @@ void D3DRenderManager::Update()
 	// 카메라 업데이트
 	// 메쉬 컬링
 
+	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
+	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
+	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+
 	// light 초기화
 	m_light.Direction.Normalize();
 	m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
-	m_deviceContext->PSSetConstantBuffers(1, 1, &m_directionalLightCB);
-
-	// View, Projection 매트릭스 초기화
-	m_eye = DirectX::XMVectorSet(0.0f, 100.0f, -200.0f, 0.0f);
-	m_at = DirectX::XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
-	m_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
-	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_viewMatrix);
-	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_projectionMatrix);
-
-	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
-	m_deviceContext->VSSetConstantBuffers(0, 1, &m_transformCB);
-	m_deviceContext->PSSetConstantBuffers(0, 1, &m_transformCB);
 
 	for (auto& staticMeshComponent : m_staticMeshComponents)
 	{
@@ -278,44 +280,44 @@ void D3DRenderManager::ApplyMaterial(Material* material)
 {
 	if (material->m_diffuseRV)
 	{
-		m_deviceContext->PSSetShaderResources(1, 1, &(material->m_diffuseRV->m_textureRV));
-		m_material.UseDiffuseMap = material->m_diffuseRV->m_textureRV != nullptr ? true : false;
+		m_deviceContext->PSSetShaderResources(0, 1, &(material->m_diffuseRV->m_textureRV));
+		m_material.UseDiffuseMap = material->m_diffuseRV != nullptr ? true : false;
 	}
 
 	if (material->m_normalRV)
 	{
-		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_normalRV->m_textureRV));
-		m_material.UseNormalMap = material->m_normalRV->m_textureRV != nullptr ? true : false;
+		m_deviceContext->PSSetShaderResources(1, 1, &(material->m_normalRV->m_textureRV));
+		m_material.UseNormalMap = material->m_normalRV != nullptr ? true : false;
 	}
 
 	if (material->m_specularRV)
 	{
 		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_specularRV->m_textureRV));
-		m_material.UseSpecularMap = material->m_specularRV->m_textureRV != nullptr ? true : false;
+		m_material.UseSpecularMap = material->m_specularRV != nullptr ? true : false;
 	}
 
 	if (material->m_emissiveRV)
 	{
 		m_deviceContext->PSSetShaderResources(3, 1, &(material->m_emissiveRV->m_textureRV));
-		m_material.UseEmissiveMap = material->m_emissiveRV->m_textureRV != nullptr ? true : false;
+		m_material.UseEmissiveMap = material->m_emissiveRV != nullptr ? true : false;
 	}
 
 	if (material->m_opacityRV)
 	{
 		m_deviceContext->PSSetShaderResources(4, 1, &(material->m_opacityRV->m_textureRV));
-		m_material.UseOpacityMap = material->m_opacityRV->m_textureRV != nullptr ? true : false;
+		m_material.UseOpacityMap = material->m_opacityRV != nullptr ? true : false;
 	}
 
 	if (material->m_metalicRV)
 	{
 		m_deviceContext->PSSetShaderResources(5, 1, &(material->m_metalicRV->m_textureRV));
-		m_material.UseMetalicMap = material->m_metalicRV->m_textureRV != nullptr ? true : false;
+		m_material.UseMetalicMap = material->m_metalicRV != nullptr ? true : false;
 	}
 
 	if (material->m_roughnessRV)
 	{
 		m_deviceContext->PSSetShaderResources(6, 1, &(material->m_roughnessRV->m_textureRV));
-		m_material.UseRoughnessMap = material->m_roughnessRV->m_textureRV != nullptr ? true : false;
+		m_material.UseRoughnessMap = material->m_roughnessRV != nullptr ? true : false;
 	}
 
 	if (m_material.UseOpacityMap && m_alphaBlendState != nullptr)
@@ -356,10 +358,10 @@ void D3DRenderManager::CreatePS()
 {
 	HRESULT hr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	hr = CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
+		hr = D3DReadFileToBlob(L"PBRPixelShader.cso", &pixelShaderBuffer);
 	}
 
 	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);

@@ -24,10 +24,10 @@ void StaticMeshComponent::Update(float deltaTime)
 
 void StaticMeshComponent::OnBeginPlay()
 {
-	if (!m_filePath.empty())
+	/*if (!m_filePath.empty())
 	{
 		ReadResource(m_filePath);
-	}
+	}*/
 }
 
 void StaticMeshComponent::OnEndPlay()
@@ -53,9 +53,7 @@ void StaticMeshComponent::SetResource(std::shared_ptr<StaticMeshResource> resour
 	m_meshInstances.resize(m_resource->m_meshes.size());
 	for (int i = 0; i < m_resource->m_meshes.size(); i++)
 	{
-		m_meshInstances[i].Create(&m_resource->m_meshes[i],
-			&m_worldTM,
-			m_resource->GetMeshMaterial(i));
+		m_meshInstances[i].Create(&m_resource->m_meshes[i], &m_worldTM, m_resource->GetMeshMaterial(i));
 	}
 }
 

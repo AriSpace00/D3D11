@@ -17,10 +17,11 @@ StaticMeshActor::~StaticMeshActor()
 void StaticMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
-	if (!m_filePath.empty())
+
+	/*if (!m_filePath.empty())
 	{
 		m_staticMeshComponent->ReadResource(m_filePath);
-	}
+	}*/
 }
 
 void StaticMeshActor::OnEndPlay()

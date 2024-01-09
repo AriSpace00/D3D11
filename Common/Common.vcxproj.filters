@@ -81,9 +81,6 @@
     <Filter Include="소스 파일\Graphics\Resource\Animation">
       <UniqueIdentifier>{5862e7b8-ea9e-4f17-af8c-e9d0915a9dda}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Graphics\Resource\Node">
-      <UniqueIdentifier>{efec70f9-d831-421b-9762-5876168b86fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Engine\World">
       <UniqueIdentifier>{afd82a75-865b-4089-91ea-e92e87f713b8}</UniqueIdentifier>
     </Filter>
