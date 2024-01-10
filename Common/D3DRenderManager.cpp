@@ -65,7 +65,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 
 	m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBufferTexture);
 	m_device->CreateRenderTargetView(BackBufferTexture, NULL, &m_renderTargetView);   // 텍스처는 내부 참조 증가
-	BackBufferTexture->Release();                                                              // 외부 참조 카운트를 감소시킨다
+	SAFE_RELEASE(BackBufferTexture);                                                             // 외부 참조 카운트를 감소시킨다
 
 	// 렌더 타겟을 최종 출력 파이프라인에 바인딩
 	// Flip Mode가 아닐 때에는 최초 한번만 설정하면 됨
@@ -103,7 +103,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
 	m_device->CreateDepthStencilView(textureDepthStencil, &descDSV, &m_depthStencilView);
-	textureDepthStencil->Release();
+	SAFE_RELEASE(textureDepthStencil);
 
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
@@ -207,8 +207,11 @@ void D3DRenderManager::UnInitialize()
 
 void D3DRenderManager::Update()
 {
-	// 카메라 업데이트
-	// 메쉬 컬링
+	/// TODO : 카메라 업데이트
+	/// TODO : 메쉬 컬링
+
+	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
+	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
 
 	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
@@ -273,7 +276,7 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::Begin("Camera Properties");
 
 		ImGui::Text("World Transform");
-		/*float x = DirectX::XMVectorGetX(m_eye);
+		float x = DirectX::XMVectorGetX(m_eye);
 		float y = DirectX::XMVectorGetY(m_eye);
 		float z = DirectX::XMVectorGetZ(m_eye);
 		ImGui::Text("X");
@@ -286,7 +289,7 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SameLine();
 		ImGui::SliderFloat("##cwz", &z, -10000.0f, 0.0f);
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
-		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);*/
+		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 
 		ImGui::End();
 	}
