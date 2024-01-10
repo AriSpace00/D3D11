@@ -210,9 +210,6 @@ void D3DRenderManager::Update()
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
 
-	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
-	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
-
 	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 	// light 초기화
@@ -290,6 +287,7 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SliderFloat("##cwz", &z, -10000.0f, 0.0f);
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
 		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
+		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
 
 		ImGui::End();
 	}
@@ -301,43 +299,43 @@ void D3DRenderManager::ApplyMaterial(Material* material)
 {
 	if (material->m_diffuseRV)
 	{
-		m_deviceContext->PSSetShaderResources(0, 1, &(material->m_diffuseRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(0, 1, material->m_diffuseRV->m_textureRV.GetAddressOf());
 		m_material.UseDiffuseMap = material->m_diffuseRV != nullptr ? true : false;
 	}
 
 	if (material->m_normalRV)
 	{
-		m_deviceContext->PSSetShaderResources(1, 1, &(material->m_normalRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(1, 1, material->m_normalRV->m_textureRV.GetAddressOf());
 		m_material.UseNormalMap = material->m_normalRV != nullptr ? true : false;
 	}
 
 	if (material->m_specularRV)
 	{
-		m_deviceContext->PSSetShaderResources(2, 1, &(material->m_specularRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(2, 1, material->m_specularRV->m_textureRV.GetAddressOf());
 		m_material.UseSpecularMap = material->m_specularRV != nullptr ? true : false;
 	}
 
 	if (material->m_emissiveRV)
 	{
-		m_deviceContext->PSSetShaderResources(3, 1, &(material->m_emissiveRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(3, 1, material->m_emissiveRV->m_textureRV.GetAddressOf());
 		m_material.UseEmissiveMap = material->m_emissiveRV != nullptr ? true : false;
 	}
 
 	if (material->m_opacityRV)
 	{
-		m_deviceContext->PSSetShaderResources(4, 1, &(material->m_opacityRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(4, 1, material->m_opacityRV->m_textureRV.GetAddressOf());
 		m_material.UseOpacityMap = material->m_opacityRV != nullptr ? true : false;
 	}
 
 	if (material->m_metalicRV)
 	{
-		m_deviceContext->PSSetShaderResources(5, 1, &(material->m_metalicRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(5, 1, material->m_metalicRV->m_textureRV.GetAddressOf());
 		m_material.UseMetalicMap = material->m_metalicRV != nullptr ? true : false;
 	}
 
 	if (material->m_roughnessRV)
 	{
-		m_deviceContext->PSSetShaderResources(6, 1, &(material->m_roughnessRV->m_textureRV));
+		m_deviceContext->PSSetShaderResources(6, 1, material->m_roughnessRV->m_textureRV.GetAddressOf());
 		m_material.UseRoughnessMap = material->m_roughnessRV != nullptr ? true : false;
 	}
 
