@@ -209,6 +209,15 @@ void D3DRenderManager::Update()
 {
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
+	
+	// Scale, Rotation 조정
+	Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
+	Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
+		DirectX::XMConvertToRadians(m_pitch),
+		DirectX::XMConvertToRadians(m_yaw),
+		DirectX::XMConvertToRadians(m_roll));
+
+	m_transform.WorldMatrix = scale * spin;
 
 	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
@@ -269,6 +278,7 @@ void D3DRenderManager::RenderImGUI()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	/// Camera Properties
 	{
 		ImGui::Begin("Camera Properties");
 
@@ -291,6 +301,29 @@ void D3DRenderManager::RenderImGUI()
 
 		ImGui::End();
 	}
+
+	/// Actor Properties
+	{
+		ImGui::Begin("Actor Properties");
+
+		ImGui::Text("World Transform");
+
+		ImGui::Text("Roll(X)");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##roll", &m_roll, -360.0f, 360.0f);
+		ImGui::Text("Pitch(Y)");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##pitch", &m_pitch, -360.0f, 360.0f);
+		ImGui::Text("Yaw(Z)");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##yaw", &m_yaw, -360.0f, 360.0f);
+		ImGui::Text("Scale");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##scale", &m_scale, 1.0f, 100.0f);
+
+		ImGui::End();
+	}
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

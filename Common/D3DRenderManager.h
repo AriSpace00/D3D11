@@ -88,14 +88,20 @@ public:
     UINT m_vertexBufferOffset = 0;
     int m_indices = 0;
 
+    std::list<StaticMeshInstance*> m_staticMeshInstance;
+    std::list<StaticMeshComponent*> m_staticMeshComponents;
+
+    // 잡다한거 (나중에 지워도 될 것들)
+    const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
     DirectX::XMVECTOR m_eye;
     DirectX::XMVECTOR m_at;
     DirectX::XMVECTOR m_up;
 
-    std::list<StaticMeshInstance*> m_staticMeshInstance;
-    std::list<StaticMeshComponent*> m_staticMeshComponents;
-
-    const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    float m_roll = 0.0f;
+    float m_pitch = 0.0f;
+    float m_yaw = 0.0f;
+    float m_scale = 1.0f;
 
 public:
     bool Initialize(HWND hWnd, UINT width, UINT height);
