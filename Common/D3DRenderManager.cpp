@@ -178,6 +178,9 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 	m_transform.ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 20000.0f);
 
+	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
+	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
+
 	// 12. ImGUI 초기화
 	InitImGUI();
 
@@ -207,8 +210,6 @@ void D3DRenderManager::Update()
 	// 카메라 업데이트
 	// 메쉬 컬링
 
-	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
-	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
 	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 	// light 초기화
@@ -269,7 +270,24 @@ void D3DRenderManager::RenderImGUI()
 	ImGui::NewFrame();
 
 	{
-		ImGui::Begin("D3D Renderer에서의 ImGui 테스트");
+		ImGui::Begin("Camera Properties");
+
+		ImGui::Text("World Transform");
+		/*float x = DirectX::XMVectorGetX(m_eye);
+		float y = DirectX::XMVectorGetY(m_eye);
+		float z = DirectX::XMVectorGetZ(m_eye);
+		ImGui::Text("X");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##cwx", &x, -1000.0f, 10000.0f);
+		ImGui::Text("Y");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##cwy", &y, -1000.0f, 10000.0f);
+		ImGui::Text("Z");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##cwz", &z, -10000.0f, 0.0f);
+		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
+		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);*/
+
 		ImGui::End();
 	}
 	ImGui::Render();
