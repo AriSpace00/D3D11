@@ -90,6 +90,9 @@
     <Filter Include="소스 파일\Engine\Manager\TimeManager">
       <UniqueIdentifier>{0a4c44e6-70a9-4f54-a19b-20c8a83670f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Graphics\Manager\InputManager">
+      <UniqueIdentifier>{8d23ff8d-5bb5-4489-b4a0-9733c6d4a10f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -155,6 +158,12 @@
     <ClInclude Include="TimeManager.h">
       <Filter>소스 파일\Engine\Manager\TimeManager</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletalMesh.h">
+      <Filter>소스 파일\Graphics\Resource\SkeletalMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>소스 파일\Graphics\Manager\InputManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -213,6 +222,12 @@
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>소스 파일\Engine\Manager\TimeManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMesh.cpp">
+      <Filter>소스 파일\Graphics\Resource\SkeletalMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>소스 파일\Graphics\Manager\InputManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,8 +17,7 @@ cbuffer Transform : register(b0)
 
 cbuffer DirectionLight : register(b1)
 {
-    float3 LightDirection;
-    float DirectionLight_Pad0;
+    float4 LightDirection;
     float4 LightAmbient;
     float4 LightDiffuse;
     float4 LightSpecular;

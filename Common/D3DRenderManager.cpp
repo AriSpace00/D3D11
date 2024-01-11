@@ -217,12 +217,12 @@ void D3DRenderManager::Update()
 		DirectX::XMConvertToRadians(m_yaw),
 		DirectX::XMConvertToRadians(m_roll));
 
-	m_transform.WorldMatrix = scale * spin;
+	m_transform.WorldMatrix *= scale * spin;
 
 	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 	// light ÃÊ±âÈ­
-	m_light.Direction.Normalize();
+	//m_light.Direction.Normalize();
 	m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
 
 	for (auto& staticMeshComponent : m_staticMeshComponents)
@@ -281,7 +281,6 @@ void D3DRenderManager::RenderImGUI()
 	/// Camera Properties
 	{
 		ImGui::Begin("Camera Properties");
-
 		ImGui::Text("World Transform");
 		float x = DirectX::XMVectorGetX(m_eye);
 		float y = DirectX::XMVectorGetY(m_eye);
@@ -298,16 +297,13 @@ void D3DRenderManager::RenderImGUI()
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
 		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
-
 		ImGui::End();
 	}
 
 	/// Actor Properties
 	{
 		ImGui::Begin("Actor Properties");
-
 		ImGui::Text("World Transform");
-
 		ImGui::Text("Roll(X)");
 		ImGui::SameLine();
 		ImGui::SliderFloat("##roll", &m_roll, -360.0f, 360.0f);
@@ -320,7 +316,15 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::Text("Scale");
 		ImGui::SameLine();
 		ImGui::SliderFloat("##scale", &m_scale, 1.0f, 100.0f);
+		ImGui::End();
+	}
 
+	{
+		ImGui::Begin("Light Properties");
+		ImGui::Text("Directional Light");
+		ImGui::SliderFloat("##dx", (float*)&m_light.Direction.x, 1.f, -1.f);
+		ImGui::SliderFloat("##dy", (float*)&m_light.Direction.y, 1.f, -1.f);
+		ImGui::SliderFloat("##dz", (float*)&m_light.Direction.z, 1.f, -1.f);
 		ImGui::End();
 	}
 
@@ -451,7 +455,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		}
 
 		m_transform.WorldMatrix = meshInstance->m_nodeWorldTM->Transpose();
-		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+		//m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 		// Draw
 		meshInstance->Render(m_deviceContext);
