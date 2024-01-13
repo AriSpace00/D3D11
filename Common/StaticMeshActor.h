@@ -14,6 +14,7 @@ public:
     std::string m_filePath;
     StaticMeshComponent* m_staticMeshComponent;
 
+public:
     virtual void OnBeginPlay();
     virtual void OnEndPlay();
 

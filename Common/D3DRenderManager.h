@@ -47,7 +47,9 @@ struct CB_MatrixPalette
 
 class Material;
 class StaticMeshInstance;
+class SkeletalMeshInstance;
 class StaticMeshComponent;
+class SkeletalMeshComponent;
 
 class D3DRenderManager
 {
@@ -68,6 +70,8 @@ public:
 
 	ID3D11VertexShader* m_staticMeshVS = nullptr;
 	ID3D11InputLayout* m_staticMeshIL = nullptr;
+	ID3D11VertexShader* m_skeletalMeshVS = nullptr;
+	ID3D11InputLayout* m_skeletalMeshIL = nullptr;
 
 	ID3D11PixelShader* m_pixelShader = nullptr;
 	ID3D11SamplerState* m_samplerLinear = nullptr;
@@ -89,6 +93,9 @@ public:
 
 	std::list<StaticMeshInstance*> m_staticMeshInstance;
 	std::list<StaticMeshComponent*> m_staticMeshComponents;
+
+	std::list<SkeletalMeshInstance*> m_skeletalMeshInstance;
+	std::list<SkeletalMeshComponent*> m_skeletalMeshComponents;
 
 	// 잡다한거 (나중에 지워도 될 것들)
 	const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -116,9 +123,12 @@ public:
 
 private:
 	void CreateStaticMesh_VS_IL();
+	void CreateSkeletalMesh_VS_IL();
 	void CreatePS();
 
 	void AddMeshInstance(StaticMeshComponent* staticMesh);
+	void AddMeshInstance(SkeletalMeshComponent* skeletalMesh);
 
 	void RenderStaticMeshInstance();
+	void RenderSkeletalMeshInstance();
 };

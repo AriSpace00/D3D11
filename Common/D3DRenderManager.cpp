@@ -8,7 +8,9 @@
 
 #include "Material.h"
 #include "StaticMeshInstance.h"
+#include "SkeletalMeshInstance.h"
 #include "StaticMeshComponent.h"
+#include "SkeletalMeshComponent.h"
 
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
@@ -401,6 +403,82 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 
 	m_device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_staticMeshVS);
 	SAFE_RELEASE(vertexShaderBuffer);
+}
+
+void D3DRenderManager::CreateSkeletalMesh_VS_IL()
+{
+	HRESULT hr;
+	ID3D10Blob* vertexShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"VertexShader.cso", &vertexShaderBuffer);
+	}
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"BlendIndices",    0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BlendWeights",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	hr = m_device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_skeletalMeshIL);
+
+	m_device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_skeletalMeshVS);
+	SAFE_RELEASE(vertexShaderBuffer);
+}
+
+void D3DRenderManager::AddMeshInstance(SkeletalMeshComponent* skeletalMesh)
+{
+	for (int i = 0; i < skeletalMesh->m_meshInstances.size(); i++)
+	{
+		m_skeletalMeshInstance.push_back(&skeletalMesh->m_meshInstances[i]);
+	}
+}
+
+void D3DRenderManager::RenderSkeletalMeshInstance()
+{
+	m_deviceContext->IASetInputLayout(m_skeletalMeshIL);
+	m_deviceContext->VSSetShader(m_skeletalMeshVS, nullptr, 0);
+	m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_skeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_material < rhs->m_material;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_skeletalMeshInstance)
+	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
+		if (pPrevMaterial != meshInstance->m_material)
+		{
+			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_material;
+		}
+
+		m_transform.WorldMatrix = meshInstance->m_nodeWorldTM->Transpose();
+
+		// Scale, Rotation 조정
+		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
+
+		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(m_pitch),
+			DirectX::XMConvertToRadians(m_yaw),
+			DirectX::XMConvertToRadians(m_roll));
+
+		m_transform.WorldMatrix *= scale * spin;
+
+		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+
+		// Draw
+		meshInstance->Render(m_deviceContext);
+	}
+	m_skeletalMeshInstance.clear();
 }
 
 void D3DRenderManager::CreatePS()

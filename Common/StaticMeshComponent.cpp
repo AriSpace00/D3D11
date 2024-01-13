@@ -9,7 +9,6 @@ StaticMeshComponent::StaticMeshComponent()
 {
 	D3DRenderManager::m_instance->m_staticMeshComponents.push_back(this);
 	m_iterator = --D3DRenderManager::m_instance->m_staticMeshComponents.end();
-	
 }
 
 StaticMeshComponent::~StaticMeshComponent()
@@ -19,7 +18,7 @@ StaticMeshComponent::~StaticMeshComponent()
 
 void StaticMeshComponent::Update(float deltaTime)
 {
-	SceneComponent::Update(deltaTime);
+	__super::Update(deltaTime);
 }
 
 void StaticMeshComponent::OnBeginPlay()

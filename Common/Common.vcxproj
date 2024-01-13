@@ -24,7 +24,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Animation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="App.h" />
@@ -35,7 +35,6 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
     <ClInclude Include="Helper.h" />
-    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -56,7 +55,10 @@
     </ClInclude>
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="SkeletalMesh.h" />
+    <ClInclude Include="SkeletalMeshActor.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
+    <ClInclude Include="SkeletalMeshInstance.h" />
+    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="StaticMeshActor.h" />
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMesh.h" />
@@ -70,7 +72,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="App.cpp">
@@ -83,7 +85,6 @@
     </ClCompile>
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="D3DRenderManager.cpp" />
-    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -103,7 +104,10 @@
     </ClCompile>
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="SkeletalMesh.cpp" />
+    <ClCompile Include="SkeletalMeshActor.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
+    <ClCompile Include="SkeletalMeshInstance.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="StaticMeshActor.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMesh.cpp" />

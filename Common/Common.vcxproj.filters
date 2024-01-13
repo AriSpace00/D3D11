@@ -15,9 +15,6 @@
     <Filter Include="소스 파일\Model\Mesh">
       <UniqueIdentifier>{e87fec41-4737-470d-84ae-9ec5d46a8fb1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Model\Animation">
-      <UniqueIdentifier>{280a24c0-3594-4e4e-a9e3-1cf7ce8649b3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Model\Mesh\Node">
       <UniqueIdentifier>{8c8bc30e-d08d-4047-a3fe-81a1d1ce9826}</UniqueIdentifier>
     </Filter>
@@ -75,9 +72,6 @@
     <Filter Include="소스 파일\Graphics\Resource\Material">
       <UniqueIdentifier>{aceb7a80-145a-4bc1-a7d1-c0ecc7ad8e19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Graphics\Resource\Bone">
-      <UniqueIdentifier>{e2af69f7-e83a-43db-a072-a6b395148284}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Graphics\Resource\Animation">
       <UniqueIdentifier>{5862e7b8-ea9e-4f17-af8c-e9d0915a9dda}</UniqueIdentifier>
     </Filter>
@@ -90,14 +84,17 @@
     <Filter Include="소스 파일\Engine\Manager\TimeManager">
       <UniqueIdentifier>{0a4c44e6-70a9-4f54-a19b-20c8a83670f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Graphics\Manager\InputManager">
-      <UniqueIdentifier>{8d23ff8d-5bb5-4489-b4a0-9733c6d4a10f}</UniqueIdentifier>
+    <Filter Include="소스 파일\Engine\Instance\SkeletalMeshInstance">
+      <UniqueIdentifier>{cd014d93-fffa-4376-961c-87eb160062b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Engine\Instance\StaticMeshInstance">
+      <UniqueIdentifier>{42b65c8a-738e-4a43-8aed-fac9bfd8a5a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Graphics\Resource\Skeleton">
+      <UniqueIdentifier>{e2af69f7-e83a-43db-a072-a6b395148284}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>소스 파일\Model</Filter>
     </ClInclude>
@@ -106,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="Bone.h">
       <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>소스 파일\Model\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>소스 파일\Model\Mesh\Node</Filter>
@@ -152,17 +146,29 @@
     <ClInclude Include="World.h">
       <Filter>소스 파일\Engine\World</Filter>
     </ClInclude>
-    <ClInclude Include="StaticMeshInstance.h">
-      <Filter>소스 파일\Engine\Instance</Filter>
-    </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>소스 파일\Engine\Manager\TimeManager</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalMesh.h">
       <Filter>소스 파일\Graphics\Resource\SkeletalMesh</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>소스 파일\Graphics\Manager\InputManager</Filter>
+    <ClInclude Include="SkeletalMeshActor.h">
+      <Filter>소스 파일\Engine\Actor\SkeletalMeshActor</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshInstance.h">
+      <Filter>소스 파일\Engine\Instance\StaticMeshInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshInstance.h">
+      <Filter>소스 파일\Engine\Instance\SkeletalMeshInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>소스 파일\Graphics\Resource\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>소스 파일\Graphics\Resource\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -174,9 +180,6 @@
     </ClCompile>
     <ClCompile Include="Bone.cpp">
       <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>소스 파일\Model\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Node.cpp">
       <Filter>소스 파일\Model\Mesh\Node</Filter>
@@ -217,17 +220,26 @@
     <ClCompile Include="World.cpp">
       <Filter>소스 파일\Engine\World</Filter>
     </ClCompile>
-    <ClCompile Include="StaticMeshInstance.cpp">
-      <Filter>소스 파일\Engine\Instance</Filter>
-    </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>소스 파일\Engine\Manager\TimeManager</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalMesh.cpp">
       <Filter>소스 파일\Graphics\Resource\SkeletalMesh</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>소스 파일\Graphics\Manager\InputManager</Filter>
+    <ClCompile Include="SkeletalMeshActor.cpp">
+      <Filter>소스 파일\Engine\Actor\SkeletalMeshActor</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshInstance.cpp">
+      <Filter>소스 파일\Engine\Instance\StaticMeshInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshInstance.cpp">
+      <Filter>소스 파일\Engine\Instance\SkeletalMeshInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>소스 파일\Graphics\Resource\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>소스 파일\Graphics\Resource\Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
