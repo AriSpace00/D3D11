@@ -210,16 +210,9 @@ void D3DRenderManager::Update()
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
 	
-	// Scale, Rotation 조정
-	Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
-	Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
-		DirectX::XMConvertToRadians(m_pitch),
-		DirectX::XMConvertToRadians(m_yaw),
-		DirectX::XMConvertToRadians(m_roll));
+	
 
-	m_transform.WorldMatrix *= scale * spin;
-
-	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+	//m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 	// light 초기화
 	//m_light.Direction.Normalize();
@@ -455,7 +448,18 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		}
 
 		m_transform.WorldMatrix = meshInstance->m_nodeWorldTM->Transpose();
-		//m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+
+		// Scale, Rotation 조정
+		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
+		
+		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(m_pitch),
+			DirectX::XMConvertToRadians(m_yaw),
+			DirectX::XMConvertToRadians(m_roll));
+
+		m_transform.WorldMatrix *= scale * spin;
+
+		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 		// Draw
 		meshInstance->Render(m_deviceContext);
