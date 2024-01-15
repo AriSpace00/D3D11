@@ -2,8 +2,8 @@
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
 #include "StaticMesh.h"
-#include "StaticMeshComponent.h"
 #include "StaticMeshInstance.h"
+#include "StaticMeshComponent.h"
 
 StaticMeshComponent::StaticMeshComponent()
 {

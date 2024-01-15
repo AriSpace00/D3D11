@@ -4,7 +4,9 @@
 
 #include "Common/World.h"
 #include "Common/StaticMeshActor.h"
+#include "Common/SkeletalMeshActor.h"
 #include "Common/StaticMeshComponent.h"
+#include "Common/SkeletalMeshComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -16,7 +18,7 @@ DemoApp::DemoApp(HINSTANCE hInstance)
 
 DemoApp::~DemoApp()
 {
-	DestroyStaticMesh();
+	DestroyMesh();
 }
 
 bool DemoApp::Initialize(UINT width, UINT height)
@@ -55,7 +57,11 @@ LRESULT DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		if (wParam == VK_DOWN)
 		{
-			DestroyStaticMesh();
+			DestroyMesh();
+		}
+		if (wParam == VK_LEFT)
+		{
+			LoadSkeletalMesh();
 		}
 		break;
 	}
@@ -75,7 +81,20 @@ void DemoApp::LoadStaticMesh()
 	m_spawnedActors.push_back(stActor.get());
 }
 
-void DemoApp::DestroyStaticMesh()
+void DemoApp::LoadSkeletalMesh()
+{
+	auto skActor = m_world.CreateGameObject<SkeletalMeshActor>();
+	SkeletalMeshComponent* skComponent = skActor->GetSkeletalMeshComponent();
+	skComponent->ReadResource("../Resource/FBXLoad_Test/fbx/SkinningTest.fbx");
+
+	int range = 500;
+	float posx = (float)(rand() % range) - range * 0.3f;
+
+	skActor->SetWorldPosition(Vector3(posx, 300, 0));
+	m_spawnedActors.push_back(skActor.get());
+}
+
+void DemoApp::DestroyMesh()
 {
 	auto it = m_spawnedActors.begin();
 	if (it == m_spawnedActors.end())
@@ -84,3 +103,4 @@ void DemoApp::DestroyStaticMesh()
 	m_world.DestroyGameObject(*it);
 	m_spawnedActors.erase(it);
 }
+

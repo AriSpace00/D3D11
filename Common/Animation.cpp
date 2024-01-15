@@ -45,7 +45,7 @@ void NodeAnimation::Create(aiNodeAnim* nodeAnim, double ticksPerSecond)
 
 void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation, Vector3& scale)
 {
-	int nextKeyIndex = (m_curKeyIndex + 1) % AnimationKeys.size();
+	/*int nextKeyIndex = (m_curKeyIndex + 1) % AnimationKeys.size();
 
 	const AnimationKey* curKey = AnimationKeys[m_curKeyIndex];
 	const AnimationKey* nextKey = AnimationKeys[nextKeyIndex];
@@ -59,7 +59,7 @@ void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation
 
 	Matrix interpolationTM = Matrix::CreateScale(interpolationScale) * Matrix::CreateFromQuaternion(interpolationRotation) * Matrix::CreateTranslation(interpolationPosition);
 
-	m_interpolationTM = interpolationTM;
+	m_interpolationTM = interpolationTM;*/
 }
 
 Animation::Animation()

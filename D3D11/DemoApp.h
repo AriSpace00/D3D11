@@ -35,6 +35,7 @@ public:
     virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
     void LoadStaticMesh();
-    void DestroyStaticMesh();
+    void LoadSkeletalMesh();
+    void DestroyMesh();
 };
 

@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
-#include "SkeletalMeshComponent.h"
+#include "SkeletalMesh.h"
 #include "SkeletalMeshInstance.h"
+#include "SkeletalMeshComponent.h"
 
 SkeletalMeshComponent::SkeletalMeshComponent()
 {

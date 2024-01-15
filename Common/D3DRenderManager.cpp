@@ -211,18 +211,17 @@ void D3DRenderManager::Update()
 {
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
-	
-	
-
-	//m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
 
 	// light 초기화
-	//m_light.Direction.Normalize();
 	m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
 
 	for (auto& staticMeshComponent : m_staticMeshComponents)
 	{
 		AddMeshInstance(staticMeshComponent);
+	}
+	for (auto& skeletalMeshComponent : m_skeletalMeshComponents)
+	{
+		AddMeshInstance(skeletalMeshComponent);
 	}
 }
 
@@ -233,6 +232,7 @@ void D3DRenderManager::Render()
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	RenderStaticMeshInstance();
+	RenderSkeletalMeshInstance();
 
 	RenderImGUI();
 
