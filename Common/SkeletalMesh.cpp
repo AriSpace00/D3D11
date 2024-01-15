@@ -51,7 +51,7 @@ void SkeletalMesh::CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& i
 	m_indexCount = indexCount;
 }
 
-void SkeletalMesh::Create(ID3D11Device* device, aiMesh* mesh)
+void SkeletalMesh::Create(aiMesh* mesh, Skeleton* skeleton)
 {
 	m_materialIndex = mesh->mMaterialIndex;
 
@@ -67,35 +67,22 @@ void SkeletalMesh::Create(ID3D11Device* device, aiMesh* mesh)
 	m_boneReferences.resize(mesh->mNumBones);
 	for (int i = 0; i < mesh->mNumBones; i++)
 	{
-		aiBone* aiBoneRef = mesh->mBones[i];
-		string boneName = aiBoneRef->mName.C_Str();
+		aiBone* aiBone = mesh->mBones[i];
+		UINT boneIndex = skeleton->GetBoneIndexByBoneName(aiBone->mName.C_Str());
+		assert(boneIndex != -1);
+		BoneInfo* boneInfo = skeleton->GetBoneInfo(boneIndex);
+		m_boneReferences[i].BoneIndex = boneIndex;
+		m_boneReferences[i].NodeName = boneInfo->Name;
+		m_boneReferences[i].OffsetMatrix = boneInfo->OffsetMatrix;
 
-		int boneIndex = 0;
-
-		if (BoneMapping.find(boneName) == BoneMapping.end())
+		for (int j = 0; j < aiBone->mNumWeights; j++)
 		{
-			boneIndex = boneIndexCounter;
-			boneIndexCounter++;
-
-			m_boneReferences[boneIndex] = new Bone();
-			m_boneReferences[boneIndex]->Create(aiBoneRef, i);
-
-			BoneMapping[boneName] = boneIndex;
-		}
-		else
-		{
-			boneIndex = BoneMapping[boneName];
-		}
-
-		for (int j = 0; j < aiBoneRef->mNumWeights; j++)
-		{
-			unsigned int vertexID = aiBoneRef->mWeights[j].mVertexId;
-			float weight = aiBoneRef->mWeights[j].mWeight;
-
+			unsigned int vertexID = aiBone->mWeights[j].mVertexId;
+			float weight = aiBone->mWeights[j].mWeight;
 			m_vertices[vertexID].AddBoneData(boneIndex, weight);
 		}
 	}
-	CreateVertexBuffer(device, m_vertices, mesh->mNumVertices);
+	CreateVertexBuffer(D3DRenderManager::m_instance->m_device, m_vertices, mesh->mNumVertices);
 
 	m_indices.resize(mesh->mNumFaces * 3);
 	for (UINT i = 0; i < mesh->mNumFaces; i++)
@@ -104,7 +91,7 @@ void SkeletalMesh::Create(ID3D11Device* device, aiMesh* mesh)
 		m_indices[i * 3 + 1] = mesh->mFaces[i].mIndices[1];
 		m_indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
 	}
-	CreateIndexBuffer(device, m_indices, mesh->mNumFaces * 3);
+	CreateIndexBuffer(D3DRenderManager::m_instance->m_device, m_indices, mesh->mNumFaces * 3);
 }
 
 SkeletalMeshResource::SkeletalMeshResource()
@@ -145,7 +132,7 @@ void SkeletalMeshResource::Create(const std::string& path)
 	m_meshes.resize(scene->mNumMeshes);
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
-		m_meshes[i].Create(D3DRenderManager::m_instance->m_device, scene->mMeshes[i]);
+		m_meshes[i].Create(scene->mMeshes[i], &m_skeleton);
 	}
 
 	m_materials.resize(scene->mNumMaterials);
@@ -154,8 +141,22 @@ void SkeletalMeshResource::Create(const std::string& path)
 		m_materials[i].SetFileName(m_fileName);
 		m_materials[i].Create(scene->mMaterials[i]);
 	}
+
+	if (scene->HasAnimations())
+	{
+		const aiAnimation* aiAnimation = scene->mAnimations[0];
+		shared_ptr<Animation> animation = make_shared<Animation>();
+		animation->Create(path, aiAnimation);
+		m_animations.push_back(animation);
+	}
+
+	importer.FreeScene();
 }
 
 Material* SkeletalMeshResource::GetMeshMaterial(UINT index)
 {
+	assert(index < m_materials.size());
+	UINT mindex = m_meshes[index].m_materialIndex;
+	assert(mindex < m_materials.size());
+	return &m_materials[mindex];
 }

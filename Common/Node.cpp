@@ -181,7 +181,7 @@ void Node::FindNodeAnimation(const aiScene* scene, const aiNode* node)
                     if (m_nodeName == scene->mAnimations[i]->mChannels[j]->mNodeName.C_Str())
                     {
                         aiNodeAnim* nodeAnimPtr = scene->mAnimations[i]->mChannels[j];
-                        m_animation->Create(nodeAnimPtr);
+                        m_animation->Create(TODO, TODO);
                     }
                 }
             }

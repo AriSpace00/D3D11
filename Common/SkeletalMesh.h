@@ -66,7 +66,7 @@ private:
 	void CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, UINT indexCount);
 
 public:
-	void Create(ID3D11Device* device, aiMesh* mesh);
+	void Create(aiMesh* mesh, Skeleton* skeleton);
 };
 
 class SkeletalMeshResource

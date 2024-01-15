@@ -120,6 +120,8 @@ void StaticMeshResource::Create(const std::string& path)
 		m_materials[i].SetFileName(m_fileName);
 		m_materials[i].Create(scene->mMaterials[i]);
 	}
+
+	importer.FreeScene();
 }
 
 Material* StaticMeshResource::GetMeshMaterial(UINT index)
