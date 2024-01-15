@@ -76,6 +76,7 @@ public:
 	~SkeletalMeshResource();
 
 public:
+	std::wstring m_fileName;
 	std::vector<SkeletalMesh> m_meshes;
 	std::vector<Material> m_materials;
 	Skeleton m_skeleton;

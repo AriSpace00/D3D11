@@ -23,10 +23,6 @@ void StaticMeshComponent::Update(float deltaTime)
 
 void StaticMeshComponent::OnBeginPlay()
 {
-	/*if (!m_filePath.empty())
-	{
-		ReadResource(m_filePath);
-	}*/
 }
 
 void StaticMeshComponent::OnEndPlay()
