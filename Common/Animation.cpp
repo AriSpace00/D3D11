@@ -80,8 +80,8 @@ void Animation::Create(const std::string filePath, const aiAnimation* aiAnimatio
 	m_duration = (float)(aiAnimation->mDuration / aiAnimation->mTicksPerSecond);
 	for (int i = 0; i < aiAnimation->mNumChannels; i++)
 	{
-		aiNodeAnim* aiNodeAnim = aiAnimation->mChannels[i];
 		NodeAnimation& refNodeAnim = m_nodeAnimations[i];
-		m_nodeAnimations[0].Create(aiNodeAnim, aiAnimation->mTicksPerSecond);
+		aiNodeAnim* aiNodeAnim = aiAnimation->mChannels[i];
+		refNodeAnim.Create(aiNodeAnim, aiAnimation->mTicksPerSecond);
 	}
 }
