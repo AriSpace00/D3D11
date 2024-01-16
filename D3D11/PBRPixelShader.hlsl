@@ -86,7 +86,7 @@ float4 main(PS_INPUT input) : SV_Target
     float3 PBR = (DiffuseBRDF + SpecularBRDF) * CosNL;
 
     PBR = pow(PBR, 1 / 2.2);
-    
+
     // Final
     //float3 finalColor = PBR + Ambient;
     //finalColor = pow(finalColor, 1 / 2.2);
