@@ -170,6 +170,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 
 	// 10. VertexShader, PixelShader, InputLayout 생성
 	CreateStaticMesh_VS_IL();
+	CreateSkeletalMesh_VS_IL();
 	CreatePS();
 
 	// 11. View, Projection 매트릭스 초기화
