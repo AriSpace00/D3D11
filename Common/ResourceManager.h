@@ -24,6 +24,7 @@ public:
     std::shared_ptr<StaticMeshResource> CreateStaticMeshResource(std::string filePath);
     std::shared_ptr<SkeletalMeshResource> CreateSkeletalMeshResource(std::string filePath);
     std::shared_ptr<MaterialTexture> CreateMaterial(std::wstring filePath);
+    std::shared_ptr<MaterialTexture> CreateMaterial(const DirectX::XMFLOAT4& value);
     std::shared_ptr<Animation> CreateAnimation(std::string filePath);
 };                                            
 

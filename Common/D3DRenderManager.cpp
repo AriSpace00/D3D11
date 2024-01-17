@@ -466,12 +466,10 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 
 		// Scale, Rotation Á¶Á¤
 		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
-
 		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
 			DirectX::XMConvertToRadians(m_pitch),
 			DirectX::XMConvertToRadians(m_yaw),
 			DirectX::XMConvertToRadians(m_roll));
-
 		m_transform.WorldMatrix *= scale * spin;
 
 		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);

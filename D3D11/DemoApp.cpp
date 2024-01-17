@@ -24,8 +24,6 @@ DemoApp::~DemoApp()
 bool DemoApp::Initialize(UINT width, UINT height)
 {
 	App::Initialize(width, height);
-
-	LoadStaticMesh();
 	ChangeWorld(&m_world);
 
 	return true;

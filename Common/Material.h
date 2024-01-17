@@ -5,6 +5,11 @@
 
 struct aiMaterial;
 
+struct VertexMaterial
+{
+    DirectX::XMFLOAT4 Diffuse = {1.0f, 0.0f, 0.0f, 1.0f};
+};
+
 class MaterialTexture
 {
 public:
@@ -14,6 +19,7 @@ public:
     std::wstring m_filePath;
     ComPtr<ID3D11ShaderResourceView> m_textureRV = nullptr;
     void Create(const std::wstring& filePath);
+    void Create(const DirectX::XMFLOAT4& value);
 };
 
 class Material

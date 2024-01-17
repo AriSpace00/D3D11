@@ -107,6 +107,13 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterial(std::wstring fi
     return resourcePtr;
 }
 
+std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterial(const DirectX::XMFLOAT4& value)
+{
+	std::shared_ptr<MaterialTexture> resourcePtr = std::make_shared<MaterialTexture>();
+    resourcePtr->Create(value);
+    return resourcePtr;
+}
+
 std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath)
 {
     return nullptr;
