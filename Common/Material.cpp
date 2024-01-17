@@ -29,22 +29,39 @@ void MaterialTexture::Create(const std::wstring& filePath)
 	m_filePath = filePath;
 }
 
+void Create1x1BMPRawData(unsigned char r, unsigned char g, unsigned char b, std::vector<unsigned char>* outData)
+{
+	(*outData) =
+	{
+		0x42, 0x4D, 0x3A, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x36, 0x00,
+		0x00, 0x00, 0x28, 0x00,
+		0x00, 0x00, 0x01, 0x00,
+		0x00, 0x00, 0x01, 0x00,
+		0x00, 0x00, 0x01, 0x00,
+		0x18, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x04, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, b, g,
+		r, 0x00,
+	};
+}
+
 void MaterialTexture::Create(const DirectX::XMFLOAT4& value)
 {
-	VertexMaterial vertex;
-	vertex.Diffuse.x = value.x;
-	vertex.Diffuse.y = value.y;
-	vertex.Diffuse.z = value.z;
-	vertex.Diffuse.w = 1.0f;
-
-	uint8_t* test = reinterpret_cast<uint8_t*>(&vertex.Diffuse);
+	std::vector<unsigned char> outData;
+	Create1x1BMPRawData(value.x, value.y, value.z, &outData);
 
 	/// TODO textureRV°¡ nullptrµÊ
 	HRESULT hr = DirectX::CreateWICTextureFromMemory(
 		D3DRenderManager::m_instance->m_device,
 		D3DRenderManager::m_instance->m_deviceContext,
-		test,
-		sizeof(vertex.Diffuse),
+		outData.data(),
+		outData.size(),
 		nullptr,
 		&m_textureRV);
 

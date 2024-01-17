@@ -19,6 +19,9 @@ public:
     std::vector<SkeletalMeshInstance> m_meshInstances;
     std::list<SkeletalMeshComponent*>::iterator m_iterator;
 
+    float m_animationProgressTime = 0.0f;
+    UINT m_animationIndex = 0;
+
 public:
     virtual void Update(float deltaTime);
     virtual void OnBeginPlay();
