@@ -1,19 +1,15 @@
 #pragma once
 #include "Component.h"
+#include "Transform.h"
+
 class SceneComponent :
-    public Component
+    public Component, public Transform
 {
 public:
     SceneComponent();
     virtual ~SceneComponent();
 
-public:
-    SceneComponent* m_parent;
-
 protected:
-    Matrix m_localTM;
-    Matrix m_worldTM;
-
     Vector3 m_localPosition;
     Vector3 m_localRotation;
     Vector3 m_localScale;
@@ -22,8 +18,6 @@ public:
     virtual void Update(float deltaTime);
     virtual void OnBeginPlay();
     virtual void OnEndPlay();
-
-    void SetParent(SceneComponent* parent);
 
     void SetLocalPosition(const Vector3& position);
     void SetLocalRotation(const Vector3& rotation);

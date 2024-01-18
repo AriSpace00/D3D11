@@ -93,6 +93,12 @@
     <Filter Include="소스 파일\Graphics\Resource\Skeleton">
       <UniqueIdentifier>{e2af69f7-e83a-43db-a072-a6b395148284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Engine\MixIn">
+      <UniqueIdentifier>{2f757aa5-55d4-430d-b9a3-2a4128681119}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Engine\MixIn\Transform">
+      <UniqueIdentifier>{ed3365c4-9ac4-4acd-a4cc-063b1d840a4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -170,6 +176,9 @@
     <ClInclude Include="Animation.h">
       <Filter>소스 파일\Graphics\Resource\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>소스 파일\Engine\MixIn\Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp">
@@ -240,6 +249,9 @@
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>소스 파일\Graphics\Resource\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>소스 파일\Engine\MixIn\Transform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

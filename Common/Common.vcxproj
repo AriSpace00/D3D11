@@ -64,6 +64,7 @@
     <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="StaticMeshInstance.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +114,7 @@
     <ClCompile Include="StaticMesh.cpp" />
     <ClCompile Include="StaticMeshInstance.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
