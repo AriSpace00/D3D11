@@ -45,21 +45,27 @@ void NodeAnimation::Create(aiNodeAnim* nodeAnim, double ticksPerSecond)
 
 void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation, Vector3& scale)
 {
-	/*int nextKeyIndex = (m_curKeyIndex + 1) % AnimationKeys.size();
+	assert(AnimationKeys.size() > 0);
+	if (AnimationKeys.size() == 1)
+	{
+		position = AnimationKeys[0].Position;
+		rotation = AnimationKeys[0].Rotation;
+		scale = AnimationKeys[0].Scale;
+	}
+	else
+	{
+		int i = 0;
+		for (i = 0; i < AnimationKeys.size(); i++)
+		{
+			if (AnimationKeys[i].Time > time)
+				break;
+		}
 
-	const AnimationKey* curKey = AnimationKeys[m_curKeyIndex];
-	const AnimationKey* nextKey = AnimationKeys[nextKeyIndex];
-
-	float interval = (curKey->Time - nextKey->Time) / m_animFps;
-	float ratio = (m_duration - curKey->Time / m_animFps) / interval;
-
-	Vector3 interpolationPosition = Vector3::Lerp(curKey->Position, nextKey->Position, ratio);
-	Vector4 interpolationRotation = Quaternion::Slerp(curKey->Rotation, nextKey->Rotation, ratio);
-	Vector3 interpolationScale = Vector3::Lerp(curKey->Scale, nextKey->Scale, ratio);
-
-	Matrix interpolationTM = Matrix::CreateScale(interpolationScale) * Matrix::CreateFromQuaternion(interpolationRotation) * Matrix::CreateTranslation(interpolationPosition);
-
-	m_interpolationTM = interpolationTM;*/
+		float ratio = (time - AnimationKeys[i - 1].Time) / (AnimationKeys[i].Time - AnimationKeys[i - 1].Time);
+		position = Vector3::Lerp(AnimationKeys[i - 1].Position, AnimationKeys[i].Position, ratio);
+		rotation = Quaternion::Lerp(AnimationKeys[i - 1].Rotation, AnimationKeys[i].Rotation, ratio);
+		scale = Vector3::Lerp(AnimationKeys[i - 1].Scale, AnimationKeys[i].Scale, ratio);
+	}
 }
 
 Animation::Animation()

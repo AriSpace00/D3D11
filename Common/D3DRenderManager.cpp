@@ -330,47 +330,25 @@ void D3DRenderManager::RenderImGUI()
 
 void D3DRenderManager::ApplyMaterial(Material* material)
 {
-	if (material->m_diffuseRV)
-	{
-		m_deviceContext->PSSetShaderResources(0, 1, material->m_diffuseRV->m_textureRV.GetAddressOf());
-		m_material.UseDiffuseMap = material->m_diffuseRV != nullptr ? true : false;
-	}
+	ID3D11ShaderResourceView* nullSRV[7] = {
+		material->m_diffuseRV != nullptr ? material->m_diffuseRV->m_textureRV.Get() : nullptr,
+		material->m_normalRV != nullptr ? material->m_normalRV->m_textureRV.Get() : nullptr,
+		material->m_specularRV != nullptr ? material->m_specularRV->m_textureRV.Get() : nullptr,
+		material->m_emissiveRV != nullptr ? material->m_emissiveRV->m_textureRV.Get() : nullptr,
+		material->m_opacityRV != nullptr ? material->m_opacityRV->m_textureRV.Get() : nullptr,
+		material->m_metalicRV != nullptr ? material->m_metalicRV->m_textureRV.Get() : nullptr,
+		material->m_roughnessRV != nullptr ? material->m_roughnessRV->m_textureRV.Get() : nullptr
+	};
 
-	if (material->m_normalRV)
-	{
-		m_deviceContext->PSSetShaderResources(1, 1, material->m_normalRV->m_textureRV.GetAddressOf());
-		m_material.UseNormalMap = material->m_normalRV != nullptr ? true : false;
-	}
+	m_deviceContext->PSSetShaderResources(0, 7, nullSRV);
 
-	if (material->m_specularRV)
-	{
-		m_deviceContext->PSSetShaderResources(2, 1, material->m_specularRV->m_textureRV.GetAddressOf());
-		m_material.UseSpecularMap = material->m_specularRV != nullptr ? true : false;
-	}
-
-	if (material->m_emissiveRV)
-	{
-		m_deviceContext->PSSetShaderResources(3, 1, material->m_emissiveRV->m_textureRV.GetAddressOf());
-		m_material.UseEmissiveMap = material->m_emissiveRV != nullptr ? true : false;
-	}
-
-	if (material->m_opacityRV)
-	{
-		m_deviceContext->PSSetShaderResources(4, 1, material->m_opacityRV->m_textureRV.GetAddressOf());
-		m_material.UseOpacityMap = material->m_opacityRV != nullptr ? true : false;
-	}
-
-	if (material->m_metalicRV)
-	{
-		m_deviceContext->PSSetShaderResources(5, 1, material->m_metalicRV->m_textureRV.GetAddressOf());
-		m_material.UseMetalicMap = material->m_metalicRV != nullptr ? true : false;
-	}
-
-	if (material->m_roughnessRV)
-	{
-		m_deviceContext->PSSetShaderResources(6, 1, material->m_roughnessRV->m_textureRV.GetAddressOf());
-		m_material.UseRoughnessMap = material->m_roughnessRV != nullptr ? true : false;
-	}
+	m_material.UseDiffuseMap = material->m_diffuseRV != nullptr ? true : false;
+	m_material.UseNormalMap = material->m_normalRV != nullptr ? true : false;
+	m_material.UseSpecularMap = material->m_specularRV != nullptr ? true : false;
+	m_material.UseEmissiveMap = material->m_emissiveRV != nullptr ? true : false;
+	m_material.UseOpacityMap = material->m_opacityRV != nullptr ? true : false;
+	m_material.UseMetalicMap = material->m_metalicRV != nullptr ? true : false;
+	m_material.UseRoughnessMap = material->m_roughnessRV != nullptr ? true : false;
 
 	if (m_material.UseOpacityMap && m_alphaBlendState != nullptr)
 		m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
@@ -384,10 +362,10 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 {
 	HRESULT hr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
+	hr = CompileShaderFromFile(L"StaticMeshVS.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"VertexShader.cso", &vertexShaderBuffer);
+		hr = D3DReadFileToBlob(L"StaticMeshVS.cso", &vertexShaderBuffer);
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -410,10 +388,10 @@ void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 {
 	HRESULT hr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"VertexShader.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
+	hr = CompileShaderFromFile(L"SkeletalMeshVS.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"VertexShader.cso", &vertexShaderBuffer);
+		hr = D3DReadFileToBlob(L"SkeletalMeshVS.cso", &vertexShaderBuffer);
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -432,66 +410,26 @@ void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 	SAFE_RELEASE(vertexShaderBuffer);
 }
 
+void D3DRenderManager::CreatePS()
+{
+	HRESULT hr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"PBRPixelShader.cso", &pixelShaderBuffer);
+	}
+
+	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	SAFE_RELEASE(pixelShaderBuffer);
+}
+
 void D3DRenderManager::AddMeshInstance(SkeletalMeshComponent* skeletalMesh)
 {
 	for (int i = 0; i < skeletalMesh->m_meshInstances.size(); i++)
 	{
 		m_skeletalMeshInstance.push_back(&skeletalMesh->m_meshInstances[i]);
 	}
-}
-
-void D3DRenderManager::RenderSkeletalMeshInstance()
-{
-	m_deviceContext->IASetInputLayout(m_skeletalMeshIL);
-	m_deviceContext->VSSetShader(m_skeletalMeshVS, nullptr, 0);
-	m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
-
-	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_skeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
-		{
-			return lhs->m_material < rhs->m_material;
-		});
-
-	Material* pPrevMaterial = nullptr;
-	for (const auto& meshInstance : m_skeletalMeshInstance)
-	{
-		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
-		if (pPrevMaterial != meshInstance->m_material)
-		{
-			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
-			pPrevMaterial = meshInstance->m_material;
-		}
-
-		m_transform.WorldMatrix = meshInstance->m_nodeWorldTM->Transpose();
-
-		// Scale, Rotation 조정
-		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
-		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
-			DirectX::XMConvertToRadians(m_pitch),
-			DirectX::XMConvertToRadians(m_yaw),
-			DirectX::XMConvertToRadians(m_roll));
-		m_transform.WorldMatrix *= scale * spin;
-
-		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
-
-		// Draw
-		meshInstance->Render(m_deviceContext);
-	}
-	m_skeletalMeshInstance.clear();
-}
-
-void D3DRenderManager::CreatePS()
-{
-	HRESULT hr;
-	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
-	if (FAILED(hr))
-	{
-		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
-	}
-
-	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
-	SAFE_RELEASE(pixelShaderBuffer);
 }
 
 void D3DRenderManager::AddMeshInstance(StaticMeshComponent* staticMesh)
@@ -542,4 +480,45 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		meshInstance->Render(m_deviceContext);
 	}
 	m_staticMeshInstance.clear();
+}
+
+void D3DRenderManager::RenderSkeletalMeshInstance()
+{
+	m_deviceContext->IASetInputLayout(m_skeletalMeshIL);
+	m_deviceContext->VSSetShader(m_skeletalMeshVS, nullptr, 0);
+	m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_skeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_material < rhs->m_material;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_skeletalMeshInstance)
+	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
+		if (pPrevMaterial != meshInstance->m_material)
+		{
+ 			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_material;
+		}
+		
+		meshInstance->UpdateMatrixPalette(&m_matrixPalette);
+		m_cbMatrixPallete.SetData(m_deviceContext, m_matrixPalette);
+
+		// Scale, Rotation 조정
+		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
+		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(m_pitch),
+			DirectX::XMConvertToRadians(m_yaw),
+			DirectX::XMConvertToRadians(m_roll));
+		m_transform.WorldMatrix *= scale * spin;
+
+		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+
+		// Draw
+		meshInstance->Render(m_deviceContext);
+	}
+	m_skeletalMeshInstance.clear();
 }

@@ -9,18 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Model">
-      <UniqueIdentifier>{07fc9b93-67da-4702-8cbe-568627aa60ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Model\Mesh">
-      <UniqueIdentifier>{e87fec41-4737-470d-84ae-9ec5d46a8fb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Model\Mesh\Node">
-      <UniqueIdentifier>{8c8bc30e-d08d-4047-a3fe-81a1d1ce9826}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Model\Mesh\Bone">
-      <UniqueIdentifier>{ffda224b-5b44-49c4-be1a-d4bee705e65b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Engine">
       <UniqueIdentifier>{f4ba9134-9889-4d6f-816a-2ae52b75f41e}</UniqueIdentifier>
     </Filter>
@@ -93,26 +81,17 @@
     <Filter Include="소스 파일\Graphics\Resource\Skeleton">
       <UniqueIdentifier>{e2af69f7-e83a-43db-a072-a6b395148284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Graphics\Resource\Bone">
+      <UniqueIdentifier>{921a4607-700e-4f8d-965a-0c9dcbfb4531}</UniqueIdentifier>
+    </Filter>
     <Filter Include="소스 파일\Engine\MixIn">
-      <UniqueIdentifier>{2f757aa5-55d4-430d-b9a3-2a4128681119}</UniqueIdentifier>
+      <UniqueIdentifier>{dbc12743-7dea-4181-b087-f3b75863dcc3}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Engine\MixIn\Transform">
       <UniqueIdentifier>{ed3365c4-9ac4-4acd-a4cc-063b1d840a4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model.h">
-      <Filter>소스 파일\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>소스 파일\Model\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>소스 파일\Model\Mesh\Node</Filter>
-    </ClInclude>
     <ClInclude Include="Actor.h">
       <Filter>소스 파일\Engine\Actor</Filter>
     </ClInclude>
@@ -179,20 +158,11 @@
     <ClInclude Include="Transform.h">
       <Filter>소스 파일\Engine\MixIn\Transform</Filter>
     </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>소스 파일\Graphics\Resource\Bone</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Model.cpp">
-      <Filter>소스 파일\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일\Model\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>소스 파일\Model\Mesh\Bone</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>소스 파일\Model\Mesh\Node</Filter>
-    </ClCompile>
     <ClCompile Include="Actor.cpp">
       <Filter>소스 파일\Engine\Actor</Filter>
     </ClCompile>
@@ -252,6 +222,9 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>소스 파일\Engine\MixIn\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>소스 파일\Graphics\Resource\Bone</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

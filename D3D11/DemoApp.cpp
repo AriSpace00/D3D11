@@ -83,12 +83,13 @@ void DemoApp::LoadSkeletalMesh()
 {
 	auto skActor = m_world.CreateGameObject<SkeletalMeshActor>();
 	SkeletalMeshComponent* skComponent = skActor->GetSkeletalMeshComponent();
-	skComponent->ReadResource("../Resource/FBXLoad_Test/fbx/SkinningTest.fbx");
+	skComponent->ReadResource("../Resource/FBXLoad_Test/fbx/Character_Run.fbx");
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.3f;
 
 	skActor->SetWorldPosition(Vector3(posx, 300, 0));
+	skComponent->PlayAnimation(0);
 	m_spawnedActors.push_back(skActor.get());
 }
 

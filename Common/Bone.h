@@ -1,22 +1,25 @@
 #pragma once
-#include "pch.h"
-#include <string>
+#include "Transform.h"
 
-struct aiBone;
+struct NodeAnimation;
 
-class Bone
+class Bone :
+	public Transform
 {
 public:
     Bone();
     ~Bone();
 
 public:
-    string m_boneName;
-    Matrix m_offsetMatrix;
-    Matrix* m_nodeWorldMatrixPtr;
-    int m_boneIndex;
+    std::string m_name;
+    std::vector<Bone> m_children;
+    NodeAnimation* m_nodeAnimation; // 노드가 사용할 NodeAnimation 주소
+    float* m_animationTime;         // 현재 노드가 애니메이션에서 어느 시간에 있는지
 
 public:
-    void Create(aiBone* bone, int boneIndex);
+    virtual void Update(float deltaTime);
+    void SetAnimationTimePtr(float* val) { m_animationTime = val; }
+	Bone* FindBone(const std::string& name);
+    Bone& CreateChild();
 };
 

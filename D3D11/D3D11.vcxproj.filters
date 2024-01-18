@@ -41,10 +41,13 @@
     <FxCompile Include="PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="SkeletalMeshVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PBRPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="StaticMeshVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
