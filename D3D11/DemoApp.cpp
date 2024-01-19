@@ -69,7 +69,7 @@ LRESULT DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void DemoApp::LoadStaticMesh()
 {
-	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
+	/*auto stActor = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
 	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/cerberus2.fbx");
 
@@ -77,15 +77,15 @@ void DemoApp::LoadStaticMesh()
 	float posx = (float)(rand() % range) - range * 0.5f;
 	stActor->SetWorldPosition(Vector3(posx, 300, 0));
 
-	m_spawnedActors.push_back(stActor.get());
+	m_spawnedActors.push_back(stActor.get());*/
 
 	auto stActor1 = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent1 = stActor1->GetStaticMeshComponent();
 	stComponent1->ReadResource("../Resource/FBXLoad_Test/fbx/zeldaPosed001.fbx");
 
 	int range1 = 500;
-	float posx1 = (float)(rand() % range) - range * 0.5f;
-	stActor1->SetWorldPosition(Vector3(posx, 300, 0));
+	float posx1 = (float)(rand() % range1) - range1 * 0.5f;
+	stActor1->SetWorldPosition(Vector3(posx1, 300, 0));
 
 	m_spawnedActors.push_back(stActor1.get());
 }
