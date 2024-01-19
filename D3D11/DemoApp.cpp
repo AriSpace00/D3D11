@@ -78,6 +78,16 @@ void DemoApp::LoadStaticMesh()
 	stActor->SetWorldPosition(Vector3(posx, 300, 0));
 
 	m_spawnedActors.push_back(stActor.get());
+
+	auto stActor1 = m_world.CreateGameObject<StaticMeshActor>();
+	StaticMeshComponent* stComponent1 = stActor1->GetStaticMeshComponent();
+	stComponent1->ReadResource("../Resource/FBXLoad_Test/fbx/zeldaPosed001.fbx");
+
+	int range1 = 500;
+	float posx1 = (float)(rand() % range) - range * 0.5f;
+	stActor1->SetWorldPosition(Vector3(posx, 300, 0));
+
+	m_spawnedActors.push_back(stActor1.get());
 }
 
 void DemoApp::LoadSkeletalMesh()

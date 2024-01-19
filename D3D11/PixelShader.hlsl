@@ -79,7 +79,7 @@ float4 main(PS_INPUT input) : SV_Target
 
     // 구성요소를 곱하면 값이 조절되는 것이지 합쳐지지 않음
     // 따라서 곱셈이 아닌 덧셈으로 각 구성요소를 결합함
-    finalColor = saturate(AmbientLight + DiffuseLight + SpecularLight + Emissive);
+    finalColor = DiffuseLight + SpecularLight + Emissive;
 
-    return float4(finalColor.rgb, Opacity);
+    return finalColor;
 }
