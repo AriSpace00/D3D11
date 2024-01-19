@@ -21,7 +21,7 @@ public:
 	std::vector<Matrix*> m_boneReferences;	// Bone에 해당되는 NodeMatrix 포인터 저장
 
 public:
-	void Create(SkeletalMesh* mesh, Material* material, Skeleton* skeleton, Bone* rootBone);
+	void Create(SkeletalMesh* mesh, Material* material, Bone* rootBone);
 	void UpdateMatrixPalette(CB_MatrixPalette* matrixPalette);
 	virtual void Render(ID3D11DeviceContext* deviceContext);
 };

@@ -123,7 +123,7 @@ void SkeletalMeshComponent::SetResource(std::shared_ptr<SkeletalMeshResource> re
 	m_meshInstances.resize(m_resource->m_meshes.size());
 	for (int i = 0; i < m_resource->m_meshes.size(); i++)
 	{
-		m_meshInstances[i].Create(&m_resource->m_meshes[i], m_resource->GetMeshMaterial(i), &resource->m_skeleton, &m_rootBone);
+		m_meshInstances[i].Create(&m_resource->m_meshes[i], m_resource->GetMeshMaterial(i), &m_rootBone);
 	}
 
 	UpdateBoneAnimationReference(0);

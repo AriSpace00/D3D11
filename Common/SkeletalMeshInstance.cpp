@@ -15,7 +15,7 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 {
 }
 
-void SkeletalMeshInstance::Create(SkeletalMesh* mesh, Material* material, Skeleton* skeleton, Bone* rootBone)
+void SkeletalMeshInstance::Create(SkeletalMesh* mesh, Material* material, Bone* rootBone)
 {
 	m_mesh = mesh;
 	m_material = material;
