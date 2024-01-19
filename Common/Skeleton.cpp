@@ -26,7 +26,7 @@ void Skeleton::Create(const aiScene* scene)
 	for (UINT i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh* aiMesh = scene->mMeshes[i];
-		if (aiMesh->HasBones())
+		if (!aiMesh->HasBones())
 			continue;
 
 		for (UINT j = 0; j < aiMesh->mNumBones; j++)

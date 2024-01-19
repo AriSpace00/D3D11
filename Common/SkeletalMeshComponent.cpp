@@ -97,6 +97,22 @@ bool SkeletalMeshComponent::ReadResource(std::string filePath)
 	return true;
 }
 
+bool SkeletalMeshComponent::AddResource(std::string filePath)
+{
+	assert(m_resource);
+	auto animation = ResourceManager::m_instance->CreateAnimation(filePath);
+	if (!animation)
+		return false;
+
+	m_resource->m_animations.push_back(animation);
+	return true;
+}
+
+std::shared_ptr<SkeletalMeshResource> SkeletalMeshComponent::GetResource()
+{
+	return m_resource;
+}
+
 void SkeletalMeshComponent::SetResource(std::shared_ptr<SkeletalMeshResource> resource)
 {
 	assert(resource);

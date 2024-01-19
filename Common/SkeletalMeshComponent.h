@@ -35,6 +35,8 @@ public:
     void PlayAnimation(UINT index);
 
     bool ReadResource(std::string filePath);
+    bool AddResource(std::string filePath);
+    std::shared_ptr<SkeletalMeshResource> GetResource();
     void SetResource(std::shared_ptr<SkeletalMeshResource> resource);
 };
 

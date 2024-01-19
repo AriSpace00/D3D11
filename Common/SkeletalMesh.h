@@ -8,7 +8,6 @@ struct BoneWeightVertex
 	Vector2 Texcoord;
 	Vector3 Normal;
 	Vector3 Tangent;
-	Vector3 BiTangent;
 
 	// 영향받는 본수는 최대4개로 제한한다.
 	int BlendIndices[4] = {};		// 참조하는 본의 인덱스의 범위는 최대128개로 일단처리하자
@@ -57,13 +56,13 @@ public:
 	UINT m_indexCount = 0;            // 인덱스 개수
 	UINT m_materialIndex = 0;         // 머테리얼 인덱스
 
-	vector<BoneWeightVertex> m_vertices;
-	vector<BoneReference> m_boneReferences;
-	vector<UINT> m_indices;
+	std::vector<BoneWeightVertex> m_vertices;
+	std::vector<BoneReference> m_boneReferences;
+	std::vector<UINT> m_indices;
 
 private:
-	void CreateVertexBuffer(ID3D11Device* device, const vector<BoneWeightVertex>& vertices, UINT vertexCount);
-	void CreateIndexBuffer(ID3D11Device* device, const vector<UINT>& indices, UINT indexCount);
+	void CreateVertexBuffer(ID3D11Device* device, const std::vector<BoneWeightVertex>& vertices, UINT vertexCount);
+	void CreateIndexBuffer(ID3D11Device* device, const std::vector<UINT>& indices, UINT indexCount);
 
 public:
 	void Create(aiMesh* mesh, Skeleton* skeleton);

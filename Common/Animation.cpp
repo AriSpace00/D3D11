@@ -1,6 +1,9 @@
 #include "pch.h"
+#include "Helper.h"
 #include "Animation.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
 void NodeAnimation::Create(aiNodeAnim* nodeAnim, double ticksPerSecond)
@@ -90,4 +93,25 @@ void Animation::Create(const std::string filePath, const aiAnimation* aiAnimatio
 		aiNodeAnim* aiNodeAnim = aiAnimation->mChannels[i];
 		refNodeAnim.Create(aiNodeAnim, aiAnimation->mTicksPerSecond);
 	}
+}
+
+void Animation::Create(const std::string filePath)
+{
+	std::filesystem::path path = ToWString(string(filePath));
+
+	Assimp::Importer importer;
+
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
+	unsigned int importFlags = aiProcess_ConvertToLeftHanded;						// 왼손 좌표계로 변환
+	const aiScene* scene = importer.ReadFile(filePath, importFlags);
+	if (!scene) {
+		LOG_MESSAGEA("Error Loading Animation FBX File: %s", importer.GetErrorString());
+		return;
+	}
+	assert(scene->mNumAnimations == 1);
+	const aiAnimation* pAiAnimation = scene->mAnimations[0];
+	assert(pAiAnimation->mNumChannels > 1); 
+	Create(filePath, pAiAnimation);
+
+	importer.FreeScene();
 }

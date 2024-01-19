@@ -40,7 +40,6 @@ public:
 	BoneInfo* GetBoneInfo(int index);
 
 	int GetBoneIndexByBoneName(const std::string& name);
-
 	int GetBoneCount() { return (int)m_bones.size(); }
 	const std::string& GetBoneName(int index) { return m_bones[index].Name; }
 };

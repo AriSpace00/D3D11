@@ -116,5 +116,30 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterial(const DirectX::
 
 std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath)
 {
-    return nullptr;
+    auto it = m_animationMap.find(filePath);
+    if (it != m_animationMap.end())
+    {
+        std::shared_ptr<Animation> resourcePtr = it->second.lock();
+        if (resourcePtr)
+        {
+            return resourcePtr;
+        }
+        else
+        {
+            m_animationMap.erase(it);
+        }
+    }
+
+    std::filesystem::path path = ToWString(filePath);
+    if (!std::filesystem::exists(path))
+    {
+        LOG_MESSAGEA("Error file not Found : %s", filePath.c_str());
+        return nullptr;
+    }
+
+    std::shared_ptr<Animation> resourcePtr = std::make_shared<Animation>();
+    resourcePtr->Create(filePath.c_str());
+    m_animationMap[filePath] = resourcePtr;
+    LOG_MESSAGEA("Complete file : %s", filePath.c_str());
+    return resourcePtr;
 }

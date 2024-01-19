@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include "Common/World.h"
+#include "Common/SkeletalMesh.h"
 #include "Common/StaticMeshActor.h"
 #include "Common/SkeletalMeshActor.h"
 #include "Common/StaticMeshComponent.h"
@@ -74,8 +75,8 @@ void DemoApp::LoadStaticMesh()
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.5f;
-
 	stActor->SetWorldPosition(Vector3(posx, 300, 0));
+
 	m_spawnedActors.push_back(stActor.get());
 }
 
@@ -83,13 +84,18 @@ void DemoApp::LoadSkeletalMesh()
 {
 	auto skActor = m_world.CreateGameObject<SkeletalMeshActor>();
 	SkeletalMeshComponent* skComponent = skActor->GetSkeletalMeshComponent();
-	skComponent->ReadResource("../Resource/FBXLoad_Test/fbx/Character_Run.fbx");
+	skComponent->ReadResource("../Resource/FBXLoad_Test/fbx/Character.fbx");
+	skComponent->AddResource("../Resource/FBXLoad_Test/fbx/Character_Run.fbx");
+	skComponent->AddResource("../Resource/FBXLoad_Test/fbx/SkinningTest.fbx");
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.3f;
-
 	skActor->SetWorldPosition(Vector3(posx, 300, 0));
-	skComponent->PlayAnimation(0);
+
+	auto skResource = skComponent->GetResource();
+	int index = rand() % skResource->m_animations.size();
+	skComponent->PlayAnimation(index);
+
 	m_spawnedActors.push_back(skActor.get());
 }
 
