@@ -36,7 +36,7 @@ void SkeletalMeshInstance::UpdateMatrixPalette(CB_MatrixPalette* matrixPalette)
 {
 	assert(m_boneReferences.size() == m_mesh->m_boneReferences.size());
 	int meshBoneCount = m_mesh->m_boneReferences.size();
-	for(int i=0; i<meshBoneCount; i++)
+	for (int i = 0; i < meshBoneCount; i++)
 	{
 		Matrix& boneNodeWorldTM = *m_boneReferences[i];
 		BoneReference& br = m_mesh->m_boneReferences[i];

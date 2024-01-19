@@ -503,11 +503,9 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
  			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
 			pPrevMaterial = meshInstance->m_material;
 		}
-		
-		meshInstance->UpdateMatrixPalette(&m_matrixPalette);
-		m_cbMatrixPallete.SetData(m_deviceContext, m_matrixPalette);
 
 		// Scale, Rotation 조정
+		m_transform.WorldMatrix = meshInstance->m_nodeWorldTM->Transpose();
 		Matrix scale = Matrix::CreateScale(m_scale, m_scale, m_scale);
 		Matrix spin = DirectX::XMMatrixRotationRollPitchYaw(
 			DirectX::XMConvertToRadians(m_pitch),
@@ -515,7 +513,9 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 			DirectX::XMConvertToRadians(m_roll));
 		m_transform.WorldMatrix *= scale * spin;
 
+		meshInstance->UpdateMatrixPalette(&m_matrixPalette);
 		m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+		m_deviceContext->UpdateSubresource(m_matrixPaletteCB, 0, nullptr, &m_matrixPalette, 0, 0);
 
 		// Draw
 		meshInstance->Render(m_deviceContext);

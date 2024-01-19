@@ -87,7 +87,6 @@ public:
 	CB_Transform m_transform;
 	CB_Material m_material;
 	CB_MatrixPalette m_matrixPalette;
-	DirectX::ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete;
 
 	UINT m_vertexBufferStride = 0;
 	UINT m_vertexBufferOffset = 0;
