@@ -21,33 +21,29 @@ float4 main(PS_INPUT input) : SV_Target
     float3 View = normalize(EyePosition - input.PosWorld);
 
     // Diffuse
-    float4 Diffuse = txDiffuse.Sample(samLinear, input.Texcoord);
-    float4 DiffuseLight = max(dot(Normal, -vLightDirection), 0);
+    float NDotL = max(dot(Normal, -vLightDirection), 0);
+    float4 Diffuse = LightDiffuse * NDotL;
+    float4 DiffuseColor = txDiffuse.Sample(samLinear, input.Texcoord);
     if (UseDiffuseMap)
     {
         // 방향이 다른 두 벡터(Normal, vLightDirection)을 내적하면 음수가 도출된다.
         // 따라서 부호를 맞춰주기 위해 vLightDirection에 -를 곱해준다.
-        DiffuseLight *= Diffuse;
+        Diffuse *= DiffuseColor;
     }
     else
     {
-        Diffuse.rgb = float4(0.8f, 0.8f, 0.8f, 1.0f);
-        DiffuseLight *= Diffuse;
+        DiffuseColor.rgb = float4(0.8f, 0.8f, 0.8f, 1.0f);
+        Diffuse *= DiffuseColor;
     }
 
     // Specular Map
-    float SpecularIntensity = 1.f;
-    if (UseSpecularMap)
-    {
-        SpecularIntensity = txSpecular.Sample(samLinear, input.Texcoord).r;
-    }
-
-    // Blinn Phong
-    float4 SpecularLight;
     float3 HalfVector = normalize(-vLightDirection + View);
     float fHDotN = max(dot(HalfVector, Normal), 0);
-    float4 BlinnPhong = pow(fHDotN, MaterialSpecularPower) * SpecularIntensity;
-    SpecularLight = BlinnPhong;
+    float4 Specular = pow(fHDotN, MaterialSpecularPower) * LightSpecular;
+    if (UseSpecularMap)
+    {
+        Specular *= txSpecular.Sample(samLinear, input.Texcoord).r;
+    }
 
     float4 Emissive = 0;
     if (UseEmissiveMap)
@@ -62,7 +58,7 @@ float4 main(PS_INPUT input) : SV_Target
 
     // 구성요소를 곱하면 값이 조절되는 것이지 합쳐지지 않음
     // 따라서 곱셈이 아닌 덧셈으로 각 구성요소를 결합함
-    finalColor = DiffuseLight + SpecularLight + Emissive;
+    finalColor = Diffuse + Specular + Emissive;
 
-    return finalColor;
+    return float4(finalColor.rgb, Opacity);
 }

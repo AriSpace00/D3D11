@@ -293,6 +293,7 @@ void D3DRenderManager::RenderImGUI()
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
 		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
+		m_light.EyePosition = m_eye;
 		ImGui::End();
 	}
 
