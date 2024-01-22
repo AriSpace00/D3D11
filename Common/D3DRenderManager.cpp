@@ -321,6 +321,8 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SliderFloat("##dx", (float*)&m_light.Direction.x, 1.f, -1.f);
 		ImGui::SliderFloat("##dy", (float*)&m_light.Direction.y, 1.f, -1.f);
 		ImGui::SliderFloat("##dz", (float*)&m_light.Direction.z, 1.f, -1.f);
+		ImGui::Text("Specular Intensity");
+		ImGui::SliderFloat("##si", (float*)&m_light.SpecularIntensity, 0.f, 1.f);
 		ImGui::End();
 	}
 

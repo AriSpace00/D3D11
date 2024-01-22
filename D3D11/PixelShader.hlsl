@@ -52,10 +52,9 @@ float4 main(PS_INPUT input) : SV_Target
 
     // Specular Map
     // Specular Map용 이미지에서 물체에 비출 빛들의 강도를 가져옴
-    float SpecularIntensity = 1;
     if (UseSpecularMap)
     {
-        SpecularIntensity = txSpecular.Sample(samLinear, input.Texcoord).r;
+        input.SpecularIntensity = txSpecular.Sample(samLinear, input.Texcoord).r;
     }
 
     // Specular Light
@@ -63,7 +62,7 @@ float4 main(PS_INPUT input) : SV_Target
     float4 SpecularLight;
     float3 HalfVector = normalize(-vLightDirection + View);
     float fHDotN = max(0.0f, dot(HalfVector, Normal));
-    float4 BlinnPhong = pow(fHDotN, MaterialSpecularPower) * MaterialSpecular * LightSpecular * SpecularIntensity;
+    float4 BlinnPhong = pow(fHDotN, MaterialSpecularPower) * MaterialSpecular * LightSpecular * input.SpecularIntensity;
     SpecularLight = BlinnPhong;
 
     float4 Emissive = 0;

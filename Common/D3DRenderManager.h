@@ -12,7 +12,7 @@ struct CB_DirectionalLight
 	Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
 	Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
 	Vector3 EyePosition;
-	float DL_pad1;
+	float SpecularIntensity;
 };
 
 struct CB_Transform
