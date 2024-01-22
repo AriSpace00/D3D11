@@ -3,13 +3,9 @@
 float4 main(PS_INPUT input) : SV_Target
 {
     float4 finalColor = 0;
-
     float Opacity = 1.0f;
-    
-    // 물체로부터 뻗어나가는 노멀 방향만 남기기 위해 노멀라이즈
-    float3 Normal = normalize(input.NorWorld);
 
-    // 노말맵 적용을 위한 탄젠트벡터, 바이탄젠트벡터 방향만 남기기 위해 노멀라이즈
+    float3 Normal = normalize(input.NorWorld);
     float3 Tangent = normalize(input.TanWorld);
     float3 BiTangent = cross(Normal, Tangent);
 
@@ -21,48 +17,36 @@ float4 main(PS_INPUT input) : SV_Target
         Normal = normalize(Normal);
     }
 
-    // 빛의 방향만 남기기 위해 노멀라이즈
     float3 vLightDirection = normalize(LightDirection.xyz);
-
-    // View : 시선벡터
-    // 내 시선 끝의 물체 픽셀로부터 카메라를 바라보는 방향만 남기기 위해 노멀라이즈
     float3 View = normalize(EyePosition - input.PosWorld);
-
-    // Ambient Light
-    // 모든 물체에 적용하는 바탕 색 * 물체가 Ambient를 조절하는 색
-    float4 AmbientLight = LightAmbient * MaterialAmbient;
 
     // Diffuse
     float4 Diffuse = txDiffuse.Sample(samLinear, input.Texcoord);
-
-    // Diffuse Light(Lambertian Lighting)
-    float4 DiffuseColor = LightDiffuse * MaterialDiffuse * Diffuse;
-    float4 DiffuseLight = dot(Normal, -vLightDirection);
+    float4 DiffuseLight = max(dot(Normal, -vLightDirection), 0);
     if (UseDiffuseMap)
     {
         // 방향이 다른 두 벡터(Normal, vLightDirection)을 내적하면 음수가 도출된다.
         // 따라서 부호를 맞춰주기 위해 vLightDirection에 -를 곱해준다.
-        DiffuseLight *= DiffuseColor;
+        DiffuseLight *= Diffuse;
     }
     else
     {
-        DiffuseColor.rgb = float4(0.8f, 0.8f, 0.8f, 1.0f);
-        DiffuseLight *= DiffuseColor;
+        Diffuse.rgb = float4(0.8f, 0.8f, 0.8f, 1.0f);
+        DiffuseLight *= Diffuse;
     }
 
     // Specular Map
-    // Specular Map용 이미지에서 물체에 비출 빛들의 강도를 가져옴
+    float SpecularIntensity = 1.f;
     if (UseSpecularMap)
     {
-        input.SpecularIntensity = txSpecular.Sample(samLinear, input.Texcoord).r;
+        SpecularIntensity = txSpecular.Sample(samLinear, input.Texcoord).r;
     }
 
-    // Specular Light
     // Blinn Phong
     float4 SpecularLight;
     float3 HalfVector = normalize(-vLightDirection + View);
-    float fHDotN = max(0.0f, dot(HalfVector, Normal));
-    float4 BlinnPhong = pow(fHDotN, MaterialSpecularPower) * MaterialSpecular * LightSpecular * input.SpecularIntensity;
+    float fHDotN = max(dot(HalfVector, Normal), 0);
+    float4 BlinnPhong = pow(fHDotN, MaterialSpecularPower) * SpecularIntensity;
     SpecularLight = BlinnPhong;
 
     float4 Emissive = 0;

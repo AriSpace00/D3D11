@@ -124,6 +124,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	m_device->CreateBuffer(&bd, nullptr, &m_directionalLightCB);
+	m_deviceContext->VSSetConstantBuffers(1, 1, &m_directionalLightCB);
 	m_deviceContext->PSSetConstantBuffers(1, 1, &m_directionalLightCB);
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -212,8 +213,7 @@ void D3DRenderManager::Update()
 {
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
-
-	// light 초기화
+	
 	m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
 
 	for (auto& staticMeshComponent : m_staticMeshComponents)
@@ -322,7 +322,7 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SliderFloat("##dy", (float*)&m_light.Direction.y, 1.f, -1.f);
 		ImGui::SliderFloat("##dz", (float*)&m_light.Direction.z, 1.f, -1.f);
 		ImGui::Text("Specular Intensity");
-		ImGui::SliderFloat("##si", (float*)&m_light.SpecularIntensity, 0.f, 1.f);
+		ImGui::SliderFloat("##si", (float*)&m_material.SpecularPower, 2.f, 5000.f);
 		ImGui::End();
 	}
 

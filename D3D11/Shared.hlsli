@@ -22,7 +22,7 @@ cbuffer DirectionLight : register(b1)
     float4 LightDiffuse;
     float4 LightSpecular;
     float3 EyePosition;
-    float SpecularIntensity;
+    float DirectionalLight_Pad0;
 }
 
 cbuffer Material : register(b2)
@@ -66,7 +66,6 @@ struct PS_INPUT
     float2 Texcoord : TEXCOORD0;
     float3 NorWorld : NORMAL;
     float3 TanWorld : TANGENT;
-    float SpecularIntensity : TEXCOORD1;
 };
 
 
