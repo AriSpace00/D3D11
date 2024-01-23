@@ -70,8 +70,17 @@ float4 main(PS_INPUT input) : SV_Target
     float CosNV = max(0.0f, dot(Normal, ViewVector));
 
     // PBR
-    float Metalic = txMetalic.Sample(samLinear, input.Texcoord).r;
-    float Roughness = txRoughness.Sample(samLinear, input.Texcoord).r;
+    float Metalic = 0.f;
+    if (UseMetalicMap)
+    {
+        Metalic = txMetalic.Sample(samLinear, input.Texcoord).r;
+    }
+
+    float Roughness = 0.f;
+    if (UseRoughnessMap)
+    {
+        Roughness = txRoughness.Sample(samLinear, input.Texcoord).r;
+    }
 
     float3 FresenalFactor = lerp(Fdielectric, Albedo, Metalic);
 

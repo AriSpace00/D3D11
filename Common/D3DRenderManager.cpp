@@ -5,12 +5,15 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
+#include <Psapi.h>
 
 #include "Material.h"
 #include "StaticMeshInstance.h"
 #include "SkeletalMeshInstance.h"
 #include "StaticMeshComponent.h"
 #include "SkeletalMeshComponent.h"
+
+#pragma comment(lib,"dxgi.lib")
 
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
@@ -32,6 +35,10 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 
 	// 결과값
 	HRESULT hr = 0;
+
+	// Create DXGI factory
+	CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)(&m_dxgiFactory));
+	m_dxgiFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(&m_dgxiAdapter));
 
 	// 스왑체인 속성 설정 구조체 생성
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -327,6 +334,20 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::End();
 	}
 
+	{
+		ImGui::Begin("Current State");
+		ImGui::Text("Up Arrow : Create zelda static mesh");
+		ImGui::Text("Left Arrow : Create character skeletal mesh");
+		ImGui::Text("Down Arrow : Delete mesh");
+		std::string videoMemoryInfo;
+		GetVideoMemoryInfo(videoMemoryInfo);
+		ImGui::Text("Video Memory : %s", videoMemoryInfo.c_str());
+		std::string systemMemoryInfo;
+		GetSystemMemoryInfo(systemMemoryInfo);
+		ImGui::Text("System Memory : %s", systemMemoryInfo.c_str());
+		ImGui::End();
+	}
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -417,10 +438,10 @@ void D3DRenderManager::CreatePS()
 {
 	HRESULT hr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	hr = CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
+		hr = D3DReadFileToBlob(L"PBRPixelShader.cso", &pixelShaderBuffer);
 	}
 
 	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
@@ -520,4 +541,21 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 		meshInstance->Render(m_deviceContext);
 	}
 	m_skeletalMeshInstance.clear();
+}
+
+void D3DRenderManager::GetVideoMemoryInfo(std::string& string)
+{
+	DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+	m_dgxiAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
+
+	string = std::to_string(videoMemoryInfo.CurrentUsage / 1024 / 1024) + " MB" + " / " + std::to_string(videoMemoryInfo.Budget / 1024 / 1024) + " MB";
+}
+
+void D3DRenderManager::GetSystemMemoryInfo(std::string& string)
+{
+	HANDLE hProcess = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	pmc.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX);
+	GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+	string = std::to_string((pmc.PagefileUsage) / 1024 / 1024) + " MB";
 }

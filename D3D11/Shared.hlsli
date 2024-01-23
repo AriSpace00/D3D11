@@ -40,7 +40,7 @@ cbuffer Material : register(b2)
     bool UseEmissiveMap;
     bool UseOpacityMap;
     bool UseMetalicMap;
-    bool UseRoughness;
+    bool UseRoughnessMap;
     float2 Material_Pad0;
 }
 

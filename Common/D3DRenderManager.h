@@ -1,9 +1,9 @@
 #pragma once
+#include <dxgi1_4.h>
 #include <DirectXtk/BufferHelpers.h>
 #include <directxtk/SimpleMath.h>
-using namespace DirectX::SimpleMath;
-
 #include <list>
+using namespace DirectX::SimpleMath;
 
 struct CB_DirectionalLight
 {
@@ -63,6 +63,9 @@ public:
 public:
 	HWND m_hWnd = nullptr;
 
+	IDXGIFactory4* m_dxgiFactory = nullptr;
+	IDXGIAdapter3* m_dgxiAdapter = nullptr;
+
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_deviceContext = nullptr;
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;
@@ -116,13 +119,13 @@ public:
 	void Update();
 	void Render();
 
+private:
 	bool InitImGUI();
 	void UnInitImGUI();
 	void RenderImGUI();
 
 	void ApplyMaterial(Material* material);
 
-private:
 	void CreateStaticMesh_VS_IL();
 	void CreateSkeletalMesh_VS_IL();
 	void CreatePS();
@@ -132,4 +135,7 @@ private:
 
 	void RenderStaticMeshInstance();
 	void RenderSkeletalMeshInstance();
+
+	void GetVideoMemoryInfo(std::string& string);
+	void GetSystemMemoryInfo(std::string& string);
 };
