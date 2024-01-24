@@ -15,6 +15,7 @@ using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
 class ImGUI;
+class EnvironmentActor;
 
 class DemoApp :
     public App
@@ -25,7 +26,8 @@ public:
 
 public:
     World m_world;
-    std::list<Actor*> m_spawnedActors;
+    EnvironmentActor* m_environmentActor = nullptr;
+	std::list<Actor*> m_spawnedActors;
 
 public:
     virtual bool Initialize(UINT width, UINT height);

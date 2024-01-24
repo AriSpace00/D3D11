@@ -90,6 +90,12 @@
     <Filter Include="소스 파일\Graphics\Instance\StaticMeshInstance">
       <UniqueIdentifier>{42b65c8a-738e-4a43-8aed-fac9bfd8a5a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Engine\Actor\EnvironmentActor">
+      <UniqueIdentifier>{dcd3d21a-686b-41d0-9044-9fb36b822121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Engine\Component\EnvironmentMeshComponent">
+      <UniqueIdentifier>{3990694a-7d87-4c92-8a88-03278c973b5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -161,6 +167,12 @@
     <ClInclude Include="StaticMeshInstance.h">
       <Filter>소스 파일\Graphics\Instance\StaticMeshInstance</Filter>
     </ClInclude>
+    <ClInclude Include="EnvironmentActor.h">
+      <Filter>소스 파일\Engine\Actor\EnvironmentActor</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentMeshComponent.h">
+      <Filter>소스 파일\Engine\Component\EnvironmentMeshComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -225,6 +237,12 @@
     </ClCompile>
     <ClCompile Include="StaticMeshInstance.cpp">
       <Filter>소스 파일\Graphics\Instance\StaticMeshInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentActor.cpp">
+      <Filter>소스 파일\Engine\Actor\EnvironmentActor</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentMeshComponent.cpp">
+      <Filter>소스 파일\Engine\Component\EnvironmentMeshComponent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

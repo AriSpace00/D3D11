@@ -31,6 +31,8 @@
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
+    <ClInclude Include="EnvironmentActor.h" />
+    <ClInclude Include="EnvironmentMeshComponent.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="pch.h" />
@@ -68,6 +70,8 @@
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="D3DRenderManager.cpp" />
+    <ClCompile Include="EnvironmentActor.cpp" />
+    <ClCompile Include="EnvironmentMeshComponent.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ResourceManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

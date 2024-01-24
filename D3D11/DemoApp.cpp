@@ -8,6 +8,8 @@
 #include "Common/SkeletalMeshActor.h"
 #include "Common/StaticMeshComponent.h"
 #include "Common/SkeletalMeshComponent.h"
+#include "Common/EnvironmentActor.h"
+#include "Common/EnvironmentMeshComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -25,6 +27,25 @@ DemoApp::~DemoApp()
 bool DemoApp::Initialize(UINT width, UINT height)
 {
 	App::Initialize(width, height);
+
+	/// IBL
+	std::string envCube = "../Resource/IBL_Test/EnvironmentCube.fbx";
+	std::wstring envHDR = L"../Resource/IBL_Test/DayEnvironment/DayEnvironmentHDRI004_4K-HDREnvHDR.dds";
+	std::wstring envDiffuseHDR = L"../Resource/IBL_Test/DayEnvironment/DayEnvironmentHDRI004_4K-HDRDiffuseHDR.dds";
+	std::wstring envSpecularHDR = L"../Resource/IBL_Test/DayEnvironment/DayEnvironmentHDRI004_4K-HDRSpecularHDR.dds";
+	std::wstring envBRDFHDR = L"../Resource/IBL_Test/DayEnvironment/DayEnvironmentHDRI004_4K-HDRBrdf.dds";
+
+	m_environmentActor = m_world.CreateGameObject<EnvironmentActor>().get();
+	EnvironmentMeshComponent* envComponent = m_environmentActor->GetEnvironmentMeshComponent();
+	envComponent->ReadEnvironmentMesh(envCube);
+	envComponent->ReadEnvironmentTexture(envHDR);
+	envComponent->ReadEnvironmentDiffuseTexture(envDiffuseHDR);
+	envComponent->ReadEnvironmentSpecularTexture(envSpecularHDR);
+	envComponent->ReadEnvironmentBRDFTexture(envBRDFHDR);
+
+
+
+	/// World
 	ChangeWorld(&m_world);
 
 	return true;
@@ -69,7 +90,7 @@ LRESULT DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void DemoApp::LoadStaticMesh()
 {
-	/*auto stActor = m_world.CreateGameObject<StaticMeshActor>();
+	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
 	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/cerberus2.fbx");
 
@@ -77,7 +98,7 @@ void DemoApp::LoadStaticMesh()
 	float posx = (float)(rand() % range) - range * 0.5f;
 	stActor->SetWorldPosition(Vector3(posx, 300, 0));
 
-	m_spawnedActors.push_back(stActor.get());*/
+	m_spawnedActors.push_back(stActor.get());
 
 	auto stActor1 = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent1 = stActor1->GetStaticMeshComponent();

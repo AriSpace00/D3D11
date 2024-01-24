@@ -13,7 +13,7 @@
 #include "StaticMeshComponent.h"
 #include "SkeletalMeshComponent.h"
 
-#pragma comment(lib,"dxgi.lib")
+#pragma comment(lib,"dxgi.lib");
 
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
@@ -438,10 +438,10 @@ void D3DRenderManager::CreatePS()
 {
 	HRESULT hr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"PBRPixelShader.cso", &pixelShaderBuffer);
+		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
 	}
 
 	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
