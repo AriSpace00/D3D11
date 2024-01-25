@@ -5,8 +5,13 @@ Texture2D txEmissive : register(t3);
 Texture2D txOpacity : register(t4);
 Texture2D txMetalic : register(t5);
 Texture2D txRoughness : register(t6);
+Texture2D txEnvTexture : register(t7);
+Texture2D txEnvDiffuse : register(t8);
+Texture2D txEnvSpecular : register(t9);
+Texture2D txEnvBRDF : register(t10);
 
 SamplerState samLinear : register(s0);
+SamplerState samplerClamp : register(s1);
 
 cbuffer Transform : register(b0)
 {
@@ -41,7 +46,8 @@ cbuffer Material : register(b2)
     bool UseOpacityMap;
     bool UseMetalicMap;
     bool UseRoughnessMap;
-    float2 Material_Pad0;
+    float UseIBL;
+    float AmbientOcclusion;
 }
 
 cbuffer MatrixPalette : register(b3)
@@ -66,6 +72,12 @@ struct PS_INPUT
     float2 Texcoord : TEXCOORD0;
     float3 NorWorld : NORMAL;
     float3 TanWorld : TANGENT;
+};
+
+struct PS_INPUT_ENVIRONMENT
+{
+    float4 PosProjection : SV_POSITION;
+    float3 Texcoord : TEXCOORD0;
 };
 
 

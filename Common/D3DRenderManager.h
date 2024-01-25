@@ -38,7 +38,8 @@ struct CB_Material
 	float UseOpacityMap;
 	float UseMetalicMap;
 	float UseRoughnessMap;
-	Vector2 Material_pad0;
+	float UseIBL = false;
+	float AmbientOcclusion = 0.5f;
 };
 
 struct CB_MatrixPalette
@@ -51,6 +52,8 @@ class StaticMeshInstance;
 class SkeletalMeshInstance;
 class StaticMeshComponent;
 class SkeletalMeshComponent;
+class EnvironmentActor;
+class EnvironmentMeshComponent;
 
 class D3DRenderManager
 {
@@ -79,7 +82,14 @@ public:
 
 	ID3D11PixelShader* m_pixelShader = nullptr;
 	ID3D11SamplerState* m_samplerLinear = nullptr;
+	ID3D11SamplerState* m_samplerClamp = nullptr;
 	ID3D11BlendState* m_alphaBlendState = nullptr;
+	ID3D11RasterizerState* m_rasterizerStateCW = nullptr;
+	ID3D11RasterizerState* m_rasterizerStateCCW = nullptr;
+
+	ID3D11VertexShader* m_environmentVS = nullptr;
+	ID3D11PixelShader* m_environmentPS = nullptr;
+	ID3D11InputLayout* m_environmentIL = nullptr;
 
 	ID3D11Buffer* m_directionalLightCB = nullptr;
 	ID3D11Buffer* m_transformCB = nullptr;
@@ -101,6 +111,8 @@ public:
 	std::list<SkeletalMeshInstance*> m_skeletalMeshInstance;
 	std::list<SkeletalMeshComponent*> m_skeletalMeshComponents;
 
+	EnvironmentMeshComponent* m_environmentMeshComponent;
+
 	// 잡다한거 (나중에 지워도 될 것들)
 	const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
@@ -113,11 +125,15 @@ public:
 	float m_yaw = 0.0f;
 	float m_scale = 1.0f;
 
+	bool m_UseIBL = true;
+
 public:
 	bool Initialize(HWND hWnd, UINT width, UINT height);
 	void UnInitialize();
 	void Update();
 	void Render();
+
+	void SetEnvironment(EnvironmentActor* actor);
 
 private:
 	bool InitImGUI();
@@ -128,14 +144,18 @@ private:
 
 	void CreateStaticMesh_VS_IL();
 	void CreateSkeletalMesh_VS_IL();
+	void CreateEnvironmentVS();
 	void CreatePS();
+	void CreateEnvironmentPS();
 
 	void AddMeshInstance(StaticMeshComponent* staticMesh);
 	void AddMeshInstance(SkeletalMeshComponent* skeletalMesh);
 
 	void RenderStaticMeshInstance();
 	void RenderSkeletalMeshInstance();
+	void RenderEnvironment();
 
 	void GetVideoMemoryInfo(std::string& string);
 	void GetSystemMemoryInfo(std::string& string);
+
 };

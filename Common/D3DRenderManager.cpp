@@ -7,14 +7,15 @@
 #include <imgui_impl_dx11.h>
 #include <Psapi.h>
 
+#include "EnvironmentActor.h"
+#include "EnvironmentMeshComponent.h"
 #include "Material.h"
 #include "StaticMeshInstance.h"
 #include "SkeletalMeshInstance.h"
 #include "StaticMeshComponent.h"
 #include "SkeletalMeshComponent.h"
 
-#pragma comment(lib,"dxgi.lib");
-
+#pragma comment(lib,"dxgi.lib")
 
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
 
@@ -162,9 +163,20 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	m_device->CreateSamplerState(&sampDesc, &m_samplerLinear);
 	m_deviceContext->PSSetSamplers(0, 1, &m_samplerLinear);
 
+	sampDesc = {};
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.MaxAnisotropy = (sampDesc.Filter == D3D11_FILTER_ANISOTROPIC) ? D3D11_REQ_MAXANISOTROPY : 1;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	m_device->CreateSamplerState(&sampDesc, &m_samplerClamp);
+	m_deviceContext->PSSetSamplers(1, 1, &m_samplerClamp);
+
 	// 9. 투명 처리를 위한 블렌드 상태 생성
 	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.AlphaToCoverageEnable = true;
 	blendDesc.IndependentBlendEnable = false;
 	blendDesc.RenderTarget[0].BlendEnable = true;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -176,12 +188,27 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	m_device->CreateBlendState(&blendDesc, &m_alphaBlendState);
 
-	// 10. VertexShader, PixelShader, InputLayout 생성
+	// 10. 컬링을 위한 RasterizerState 생성
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.AntialiasedLineEnable = true;
+	rasterizerDesc.MultisampleEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.FrontCounterClockwise = true;
+	rasterizerDesc.DepthClipEnable = true;
+	m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerStateCCW);
+
+	rasterizerDesc.FrontCounterClockwise = false;
+	m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerStateCW);
+
+	// 11. Shader 생성
 	CreateStaticMesh_VS_IL();
 	CreateSkeletalMesh_VS_IL();
 	CreatePS();
+	CreateEnvironmentVS();
+	CreateEnvironmentPS();
 
-	// 11. View, Projection 매트릭스 초기화
+	// 12. View, Projection 매트릭스 초기화
 	m_eye = DirectX::XMVectorSet(0.0f, 300.0f, -500.0f, 0.0f);
 	m_at = DirectX::XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
 	m_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -192,7 +219,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
 	m_transform.ProjectionMatrix = DirectX::XMMatrixTranspose(m_transform.ProjectionMatrix);
 
-	// 12. ImGUI 초기화
+	// 13. ImGUI 초기화
 	InitImGUI();
 
 	return true;
@@ -220,7 +247,7 @@ void D3DRenderManager::Update()
 {
 	/// TODO : 카메라 업데이트
 	/// TODO : 메쉬 컬링
-	
+
 	m_deviceContext->UpdateSubresource(m_directionalLightCB, 0, nullptr, &m_light, 0, 0);
 
 	for (auto& staticMeshComponent : m_staticMeshComponents)
@@ -239,12 +266,40 @@ void D3DRenderManager::Render()
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	if (m_environmentMeshComponent)
+	{
+		RenderEnvironment();
+	}
+
 	RenderStaticMeshInstance();
 	RenderSkeletalMeshInstance();
 
 	RenderImGUI();
 
 	m_swapChain->Present(0, 0);
+}
+
+void D3DRenderManager::SetEnvironment(EnvironmentActor* actor)
+{
+	if (actor)
+	{
+		auto component = actor->GetEnvironmentMeshComponent();
+		assert(component != nullptr);
+		m_environmentMeshComponent = component;
+
+		m_deviceContext->PSSetShaderResources(7, 1, component->m_envTexture->m_textureRV.GetAddressOf());
+		m_deviceContext->PSSetShaderResources(8, 1, component->m_envIBLDiffuseTexture->m_textureRV.GetAddressOf());
+		m_deviceContext->PSSetShaderResources(9, 1, component->m_envIBLSpecularTexture->m_textureRV.GetAddressOf());
+		m_deviceContext->PSSetShaderResources(10, 1, component->m_envIBLBRDFTexture->m_textureRV.GetAddressOf());
+		//m_material.UseIBL = true;
+		m_deviceContext->UpdateSubresource(m_materialCB, 0, nullptr, &m_material, 0, 0);
+	}
+	else
+	{
+		m_environmentMeshComponent = nullptr;
+		//m_material.UseIBL = false;
+		m_deviceContext->UpdateSubresource(m_materialCB, 0, nullptr, &m_material, 0, 0);
+	}
 }
 
 bool D3DRenderManager::InitImGUI()
@@ -331,6 +386,15 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SliderFloat("##dz", (float*)&m_light.Direction.z, 1.f, -1.f);
 		ImGui::Text("Specular Intensity");
 		ImGui::SliderFloat("##si", (float*)&m_material.SpecularPower, 2.f, 5000.f);
+		ImGui::Text("Ambient Occlusion");
+		ImGui::SliderFloat("##ao", (float*)&m_material.AmbientOcclusion, 0.f, 1.f);
+
+		//ImGui::SliderFloat("##uIBL", (float*)&m_material.UseIBL, 0.f, 1.f);
+		ImGui::Text("Use IBL");
+		m_UseIBL == true ? m_material.UseIBL = true : m_material.UseIBL = false;
+		ImGui::Checkbox("##uIBL", &m_UseIBL);
+
+		 m_deviceContext->UpdateSubresource(m_materialCB, 0, nullptr, &m_material, 0, 0);
 		ImGui::End();
 	}
 
@@ -434,17 +498,57 @@ void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 	SAFE_RELEASE(vertexShaderBuffer);
 }
 
+void D3DRenderManager::CreateEnvironmentVS()
+{
+	HRESULT hr;
+	ID3D10Blob* vertexShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"EnvironmentVS.hlsl", "main", "vs_5_0", &vertexShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"EnvironmentVS.cso", &vertexShaderBuffer);
+	}
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"BlendIndices",    0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BlendWeights",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	hr = m_device->CreateInputLayout(layout, ARRAYSIZE(layout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_environmentIL);
+
+	m_device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_environmentVS);
+	SAFE_RELEASE(vertexShaderBuffer);
+}
+
 void D3DRenderManager::CreatePS()
 {
 	HRESULT hr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"PixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	hr = CompileShaderFromFile(L"PBRPixelShader.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
 	if (FAILED(hr))
 	{
-		hr = D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBuffer);
+		hr = D3DReadFileToBlob(L"PBRPixelShader.cso", &pixelShaderBuffer);
 	}
 
 	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	SAFE_RELEASE(pixelShaderBuffer);
+}
+
+void D3DRenderManager::CreateEnvironmentPS()
+{
+	HRESULT hr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"EnvironmentPS.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"EnvironmentPS.cso", &pixelShaderBuffer);
+	}
+
+	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_environmentPS);
 	SAFE_RELEASE(pixelShaderBuffer);
 }
 
@@ -469,6 +573,8 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_deviceContext->IASetInputLayout(m_staticMeshIL);
 	m_deviceContext->VSSetShader(m_staticMeshVS, nullptr, 0);
 	m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
+	m_deviceContext->RSSetState(m_rasterizerStateCW);
+	m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_staticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -507,6 +613,8 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_deviceContext->IASetInputLayout(m_skeletalMeshIL);
 	m_deviceContext->VSSetShader(m_skeletalMeshVS, nullptr, 0);
 	m_deviceContext->PSSetShader(m_pixelShader, nullptr, 0);
+	m_deviceContext->RSSetState(m_rasterizerStateCW);
+	m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_skeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -520,7 +628,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
 		if (pPrevMaterial != meshInstance->m_material)
 		{
- 			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
+			ApplyMaterial(meshInstance->m_material);	// 머터리얼 적용
 			pPrevMaterial = meshInstance->m_material;
 		}
 
@@ -541,6 +649,19 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 		meshInstance->Render(m_deviceContext);
 	}
 	m_skeletalMeshInstance.clear();
+}
+
+void D3DRenderManager::RenderEnvironment()
+{
+	m_deviceContext->IASetInputLayout(m_environmentIL);
+	m_deviceContext->VSSetShader(m_environmentVS, nullptr, 0);
+	m_deviceContext->PSSetShader(m_environmentPS, nullptr, 0);
+	m_deviceContext->RSSetState(m_rasterizerStateCCW);
+	m_deviceContext->OMSetBlendState(m_alphaBlendState, nullptr, 0xffffffff);
+
+	m_transform.WorldMatrix = m_environmentMeshComponent->m_worldTM.Transpose();
+	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+	m_environmentMeshComponent->m_meshInstance.Render(m_deviceContext);
 }
 
 void D3DRenderManager::GetVideoMemoryInfo(std::string& string)

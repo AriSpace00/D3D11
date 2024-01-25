@@ -30,6 +30,13 @@ float3 fresnelSchlick(float3 fresenalFactor, float cosLH)
     return fresenalFactor + (1.0 - fresenalFactor) * pow(1.0 - cosLH, 5.0);
 }
 
+uint querySpecularTextureLevels()
+{
+    uint width, height, levels;
+    txEnvSpecular.GetDimensions(0, width, height, levels);
+    return levels;
+}
+
 float4 main(PS_INPUT input) : SV_Target
 {
     // Normal
@@ -56,9 +63,6 @@ float4 main(PS_INPUT input) : SV_Target
         Albedo = float4(1.0f, 0.0f, 0.0f, 1.0f);
     }
     Albedo.rgb = pow(Albedo, 2.2);
-
-    // Ambient
-    float3 Ambient = LightAmbient.rgb * MaterialAmbient.rgb * Albedo;
 
     float3 LightDirVector = normalize(LightDirection.xyz);
     float3 ViewVector = normalize(EyePosition - input.PosWorld);
@@ -94,11 +98,50 @@ float4 main(PS_INPUT input) : SV_Target
 
     float3 PBR = (DiffuseBRDF + SpecularBRDF) * CosNL;
 
-    PBR = pow(PBR, 1 / 2.2);
+    // Ambient
+    float3 Ambient = 0;
+    if (UseIBL)
+    {
+	    // Sample diffuse irradiance at normal direction.
+		// 표면이 받는 반구의 여러 방향에서 오는 간접광을 샘플링한다. Lambertian BRDF를 가정하여 포함되어 있다.
+        float3 irradiance = txEnvDiffuse.Sample(samLinear, Normal).rgb;
+
+		// Calculate Fresnel term for ambient lighting.
+		// Since we use pre-filtered cubemap(s) and irradiance is coming from many directions 
+		// use cosLo instead of angle with light's half-vector (cosLh above).
+		// See: https://seblagarde.wordpress.com/2011/08/17/hello-world/
+		// 비스듬이 보는정도, cos값은 빛 방향을 특정할수 없는 반구의 여러 방향에서 오는 간접광이므로 
+		// dot(Half,View)를 사용하지않고  dot(Normal,View)을 사용한다.
+        float3 F = fresnelSchlick(FresenalFactor, CosNV);
+
+		// Get diffuse contribution factor (as with direct lighting).
+		// 표면산란 비율을 구한다.
+        float3 kd = lerp(1.0 - F, 0.0, Metalic);
+
+		// Irradiance map contains exitant radiance assuming Lambertian BRDF, no need to scale by 1/PI here either.
+		// txIBL_Diffuse 맵에는 Lambertian BRDF를 가정하여 포함되어 있으므로 PI로 나눌필요가 없다.
+        float3 diffuseIBL = kd * Albedo * irradiance; // IBL의 diffuse 항
+
+		// Sample pre-filtered specular reflection environment at correct mipmap level.
+        uint specularTextureLevels = querySpecularTextureLevels(); // 전체 LOD 밉맵 레벨수 
+		// View,Normal 반사벡터를 사용하여 샘플링한다. 거칠기에 따라 뭉게진 반사빛을 표현하기위해  LOD 보간이 적용된다. 
+        float3 Lr = 2.0 * CosNV * Normal - ViewVector;
+        float3 specularIrradiance = txEnvSpecular.SampleLevel(samLinear, Lr, Roughness * specularTextureLevels).rgb;
+
+		// Split-sum approximation factors for Cook-Torrance specular BRDF.
+		// dot(Normal,View) , roughness를 텍셀좌표로 샘플링하여 미리계산된 x,y값을 가저온다.
+        float2 specularBRDF = txEnvSpecular.Sample(samplerClamp, float2(CosNV, Roughness)).rg;
+
+		// Total specular IBL contribution.
+        float3 specularIBL = (FresenalFactor * specularBRDF.x + specularBRDF.y) * specularIrradiance;
+
+		// Total ambient lighting contribution.
+        Ambient = (diffuseIBL + specularIBL) * AmbientOcclusion;
+    }
 
     // Final
-    //float3 finalColor = PBR + Ambient;
-    //finalColor = pow(finalColor, 1 / 2.2);
+    float3 finalColor = PBR + Ambient;
+    finalColor = pow(finalColor, 1 / 2.2);
 
-    return float4(PBR, 1.0f);
+    return float4(finalColor, 1.0f);
 }
