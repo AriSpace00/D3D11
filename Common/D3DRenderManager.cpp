@@ -17,6 +17,8 @@
 
 #pragma comment(lib,"dxgi.lib")
 
+const int SHADOWMAP_SIZE = 16384;
+
 D3DRenderManager* D3DRenderManager::m_instance = nullptr;
 
 D3DRenderManager::D3DRenderManager()
@@ -81,27 +83,33 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	// Flip Mode가 아닐 때에는 최초 한번만 설정하면 됨
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, NULL);
 
-	// 5. 뷰포트 설정
-	D3D11_VIEWPORT viewport = {};
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)width;
-	viewport.Height = (float)height;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	m_deviceContext->RSSetViewports(1, &viewport);
+	// 5-1. 뷰포트 설정
+	m_viewport.TopLeftX = 0;
+	m_viewport.TopLeftY = 0;
+	m_viewport.Width = (float)width;
+	m_viewport.Height = (float)height;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
 
-	// 6. 뎁스 & 스텐실 뷰 생성
+	// 5-2. 그림자를 위한 뷰포트 설정
+	m_shadowViewport.TopLeftX = 0;
+	m_shadowViewport.TopLeftY = 0;
+	m_shadowViewport.Width = (float)SHADOWMAP_SIZE;
+	m_shadowViewport.Height = (float)SHADOWMAP_SIZE;
+	m_shadowViewport.MinDepth = 0.0f;
+	m_shadowViewport.MaxDepth = 1.0f;
+
+	// 6-1. 뎁스 & 스텐실 뷰 생성
 	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = width;
-	descDepth.Height = height;
+	descDepth.Width = (UINT)m_viewport.Width;
+	descDepth.Height = (UINT)m_viewport.Height;
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.SampleDesc.Count = 1;
 	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
@@ -116,6 +124,32 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	SAFE_RELEASE(textureDepthStencil);
 
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+
+	// 6-2. 그림자를 위한 뎁스 & 스텐실 뷰 생성
+	descDepth = {};
+	descDepth.Width = (UINT)m_shadowViewport.Width;
+	descDepth.Height = (UINT)m_shadowViewport.Height;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.Format = DXGI_FORMAT_R32_TYPELESS;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	m_device->CreateTexture2D(&descDepth, nullptr, &m_shadowMap);
+
+	descDSV = {};
+	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	m_device->CreateDepthStencilView(m_shadowMap.Get(), &descDSV, m_shadowMapDSV.GetAddressOf());
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = descDSV.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	m_device->CreateShaderResourceView(m_shadowMap.Get(), &srvDesc, m_shadowMapSRV.GetAddressOf());
 
 	// 7. 상수 버퍼 생성
 	D3D11_BUFFER_DESC bd = {};
@@ -208,10 +242,14 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	CreateEnvironmentVS();
 	CreateEnvironmentPS();
 
-	// 12. View, Projection 매트릭스 초기화
+	// 12-1. View, Projection 초기화
 	m_eye = DirectX::XMVectorSet(0.0f, 300.0f, -500.0f, 0.0f);
 	m_at = DirectX::XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
 	m_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	/*m_eye = Vector3(0, 300, -500);
+	m_at = m_eye + -m_eye.Forward;
+	m_up = m_eye.Up;*/
 
 	m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 	m_transform.ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 20000.0f);
@@ -258,13 +296,34 @@ void D3DRenderManager::Update()
 	{
 		AddMeshInstance(skeletalMeshComponent);
 	}
+
+	// Shadow View, Shadow Projection 설정
+	Matrix shadowProjection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, m_shadowViewport.Width / (float)m_shadowViewport.Height, 0.01f, 20000.0f);
+	Vector3 shadowLookAt = m_transform.ViewMatrix.Translation() + m_transform.ViewMatrix.Forward() * 1000;
+	Vector4 lightDir = Vector4(m_light.Direction.x, m_light.Direction.y, m_light.Direction.z, m_light.Direction.w);
+	Vector3 shadowPos = shadowLookAt + (-lightDir * 5000);
+	Matrix shadowView = DirectX::XMMatrixLookAtLH(shadowPos, shadowLookAt, Vector3(0, 1, 0));
+
+	m_transform.ShadowViewMatrix = shadowView.Transpose();
+	m_transform.ShadowProjectionMatrix = shadowProjection.Transpose();
 }
 
 void D3DRenderManager::Render()
 {
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	m_deviceContext->RSSetViewports(1, &m_shadowViewport);
+	m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapDSV.Get());
+	m_deviceContext->ClearDepthStencilView(m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.f, 0.f);
+	m_deviceContext->PSSetShader(NULL, NULL, 0);
+	m_deviceContext->VSSetConstantBuffers(0, 1, &m_transformCB);
+	m_deviceContext->UpdateSubresource(m_transformCB, 0, nullptr, &m_transform, 0, 0);
+
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, m_clearColor);
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_deviceContext->RSSetViewports(1, &m_viewport);
+	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+	m_deviceContext->PSSetShaderResources(11, 1, m_shadowMapSRV.GetAddressOf());
 
 	if (m_environmentMeshComponent)
 	{
@@ -343,6 +402,7 @@ void D3DRenderManager::RenderImGUI()
 		float x = DirectX::XMVectorGetX(m_eye);
 		float y = DirectX::XMVectorGetY(m_eye);
 		float z = DirectX::XMVectorGetZ(m_eye);
+
 		ImGui::Text("X");
 		ImGui::SameLine();
 		ImGui::SliderFloat("##cwx", &x, -1000.0f, 10000.0f);
@@ -353,6 +413,10 @@ void D3DRenderManager::RenderImGUI()
 		ImGui::SameLine();
 		ImGui::SliderFloat("##cwz", &z, -10000.0f, 0.0f);
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
+
+		/*m_at = m_eye + -m_eye.Forward;
+		m_up = m_eye.Up;*/
+
 		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
 		m_light.EyePosition = m_eye;
@@ -535,6 +599,15 @@ void D3DRenderManager::CreatePS()
 	}
 
 	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+
+	pixelShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"ShadowPS.hlsl", "main", "ps_5_0", &pixelShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"ShadowPS.cso", &pixelShaderBuffer);
+	}
+
+	m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_shadowPS);
 	SAFE_RELEASE(pixelShaderBuffer);
 }
 

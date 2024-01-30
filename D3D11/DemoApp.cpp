@@ -29,12 +29,12 @@ bool DemoApp::Initialize(UINT width, UINT height)
 	App::Initialize(width, height);
 
 	/// IBL
-	std::string envCube = "../Resource/IBL_Test/EnvironmentCube.fbx";
+	/*std::string envCube = "../Resource/IBL_Test/EnvironmentCube.fbx";
 	std::wstring envHDR = L"../Resource/IBL_Test/BakerSample/BakerSampleEnvHDR.dds";
 	std::wstring envDiffuseHDR = L"../Resource/IBL_Test/BakerSample/BakerSampleDiffuseHDR.dds";
 	std::wstring envSpecularHDR = L"../Resource/IBL_Test/BakerSample/BakerSampleSpecularHDR.dds";
 	std::wstring envBRDFHDR = L"../Resource/IBL_Test/BakerSample/BakerSampleBrdf.dds";
-
+	
 	m_environmentActor = m_world.CreateGameObject<EnvironmentActor>().get();
 	EnvironmentMeshComponent* envComponent = m_environmentActor->GetEnvironmentMeshComponent();
 	envComponent->ReadEnvironmentMesh(envCube);
@@ -43,7 +43,7 @@ bool DemoApp::Initialize(UINT width, UINT height)
 	envComponent->ReadEnvironmentSpecularTexture(envSpecularHDR);
 	envComponent->ReadEnvironmentBRDFTexture(envBRDFHDR);
 	m_environmentActor->SetWorldPosition(Vector3(0.f, 0.f, 0.f));
-	D3DRenderManager::m_instance->SetEnvironment(m_environmentActor);
+	D3DRenderManager::m_instance->SetEnvironment(m_environmentActor);*/
 
 	/// World
 	ChangeWorld(&m_world);

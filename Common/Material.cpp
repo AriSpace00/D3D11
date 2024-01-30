@@ -23,37 +23,35 @@ MaterialTexture::~MaterialTexture()
 
 void MaterialTexture::Create(const std::wstring& filePath)
 {
-
 	/// TODO 내일의 내가 해야겠지
-	std::filesystem::path path(filePath);
-	std::wstring strExtension = path.extension();
-	std::transform(strExtension.begin(), strExtension.end(), strExtension.begin(), ::towlower);
+	//std::filesystem::path path(filePath);
+	//std::wstring strExtension = path.extension();
+	//std::transform(strExtension.begin(), strExtension.end(), strExtension.begin(), ::towlower);
 
-	DirectX::TexMetadata metadata1;
-	DirectX::ScratchImage scratchImage;
+	//DirectX::TexMetadata metadata1;
+	//DirectX::ScratchImage scratchImage;
 
-	if (strExtension == L".dds")
-	{
-		DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, &metadata1, scratchImage);
-	}
-	else if (strExtension == L".tga")
-	{
-		DirectX::LoadFromTGAFile(filePath.c_str(), &metadata1, scratchImage);
-	}
-	else if (strExtension == L".hdr")
-	{
-		DirectX::LoadFromHDRFile(filePath.c_str(), &metadata1, scratchImage);
-	}
-	else // 기타..
-	{
-		DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, &metadata1, scratchImage);
-	}
+	//if (strExtension == L".dds")
+	//{
+	//	DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, &metadata1, scratchImage);
+	//}
+	//else if (strExtension == L".tga")
+	//{
+	//	DirectX::LoadFromTGAFile(filePath.c_str(), &metadata1, scratchImage);
+	//}
+	//else if (strExtension == L".hdr")
+	//{
+	//	DirectX::LoadFromHDRFile(filePath.c_str(), &metadata1, scratchImage);
+	//}
+	//else // 기타..
+	//{
+	//	DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, &metadata1, scratchImage);
+	//}
 
-
-	/*DirectX::CreateWICTextureFromFile(
+	DirectX::CreateWICTextureFromFile(
 		D3DRenderManager::m_instance->m_device,
 		filePath.c_str(), nullptr,
-		&m_textureRV);*/
+		&m_textureRV);
 	m_filePath = filePath;
 }
 

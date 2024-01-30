@@ -25,5 +25,8 @@ PS_INPUT main(VS_INPUT input)
     output.NorWorld = normalize(mul(input.NorModel, (float3x3) matWorld));
     output.TanWorld = normalize(mul(input.TanModel, (float3x3) matWorld));
 
+    output.PosShadow = mul(output.PosWorld, ShadowView);
+    output.PosShadow = mul(output.PosShadow, ShadowProjection);
+
     return output;
 }

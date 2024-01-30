@@ -139,8 +139,24 @@ float4 main(PS_INPUT input) : SV_Target
         Ambient = (diffuseIBL + specularIBL) * AmbientOcclusion;
     }
 
+    float3 directLighting;
+
+    float currentShadowDepth = input.PosShadow.z / input.PosShadow.w;
+    float2 uv = input.PosShadow.xy / input.PosShadow.w;
+    uv.y = -uv.y;
+    uv = uv * 0.5 + 0.5;
+
+    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+    {
+        float sampleShadowDepth = txShadow.Sample(samLinear, uv).r;
+        if (currentShadowDepth > sampleShadowDepth + 0.0001)
+        {
+            directLighting = 0.0f;
+        }
+    }
+
     // Final
-    float3 finalColor = PBR + Ambient;
+    float3 finalColor = directLighting + PBR;
     finalColor = pow(finalColor, 1 / 2.2);
 
     return float4(finalColor, 1.0f);

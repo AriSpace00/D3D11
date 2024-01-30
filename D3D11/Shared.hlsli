@@ -9,6 +9,7 @@ Texture2D txEnvTexture : register(t7);
 Texture2D txEnvDiffuse : register(t8);
 Texture2D txEnvSpecular : register(t9);
 Texture2D txEnvBRDF : register(t10);
+Texture2D txShadow : register(t11);
 
 SamplerState samLinear : register(s0);
 SamplerState samplerClamp : register(s1);
@@ -18,6 +19,8 @@ cbuffer Transform : register(b0)
     matrix World;
     matrix View;
     matrix Projection;
+    matrix ShadowView;
+    matrix ShadowProjection;
 }
 
 cbuffer DirectionLight : register(b1)
@@ -72,6 +75,7 @@ struct PS_INPUT
     float2 Texcoord : TEXCOORD0;
     float3 NorWorld : NORMAL;
     float3 TanWorld : TANGENT;
+    float4 PosShadow : TEXCOORD1;
 };
 
 struct PS_INPUT_ENVIRONMENT
