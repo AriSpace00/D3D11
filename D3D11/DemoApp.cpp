@@ -28,6 +28,22 @@ bool DemoApp::Initialize(UINT width, UINT height)
 {
 	App::Initialize(width, height);
 
+	/// Plane
+	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
+	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
+	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/plane.fbx");
+
+	Matrix scale = Matrix::CreateScale(500.f, 500.f, 500.f);
+	Matrix rotation = DirectX::XMMatrixRotationRollPitchYaw(
+		DirectX::XMConvertToRadians(80.0f),
+		DirectX::XMConvertToRadians(0.0f),
+		DirectX::XMConvertToRadians(0.0f));
+	Matrix position = Matrix::CreateTranslation(0.f, 200.f, 0.f);
+	Matrix worldTM = scale * rotation * position;
+	stActor->SetWorldTransform(worldTM);
+
+	m_spawnedActors.push_back(stActor.get());
+
 	/// IBL
 	/*std::string envCube = "../Resource/IBL_Test/EnvironmentCube.fbx";
 	std::wstring envHDR = L"../Resource/IBL_Test/BakerSample/BakerSampleEnvHDR.dds";
@@ -92,23 +108,23 @@ void DemoApp::LoadStaticMesh()
 {
 	auto stActor = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent = stActor->GetStaticMeshComponent();
-	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/cerberus2.fbx");
+	stComponent->ReadResource("../Resource/FBXLoad_Test/fbx/Character.fbx");
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.5f;
-	stActor->SetWorldPosition(Vector3(posx, 300, 0));
+	stActor->SetWorldPosition(Vector3(posx, 200, 0));
 
 	m_spawnedActors.push_back(stActor.get());
 
-	auto stActor1 = m_world.CreateGameObject<StaticMeshActor>();
+	/*auto stActor1 = m_world.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* stComponent1 = stActor1->GetStaticMeshComponent();
 	stComponent1->ReadResource("../Resource/FBXLoad_Test/fbx/zeldaPosed001.fbx");
 
 	int range1 = 500;
 	float posx1 = (float)(rand() % range1) - range1 * 0.5f;
-	stActor1->SetWorldPosition(Vector3(posx1, 300, 0));
+	stActor1->SetWorldPosition(Vector3(posx1, 200, 0));
 
-	m_spawnedActors.push_back(stActor1.get());
+	m_spawnedActors.push_back(stActor1.get());*/
 }
 
 void DemoApp::LoadSkeletalMesh()
@@ -121,7 +137,7 @@ void DemoApp::LoadSkeletalMesh()
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.3f;
-	skActor->SetWorldPosition(Vector3(posx, 300, 0));
+	skActor->SetWorldPosition(Vector3(posx, 200, 0));
 
 	auto skResource = skComponent->GetResource();
 	int index = rand() % skResource->m_animations.size();

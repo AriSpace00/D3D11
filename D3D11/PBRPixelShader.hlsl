@@ -60,7 +60,7 @@ float4 main(PS_INPUT input) : SV_Target
     }
     else
     {
-        Albedo = float4(1.0f, 0.0f, 0.0f, 1.0f);
+        Albedo = float4(0.9f, 0.9f, 0.9f, 1.0f);
     }
     Albedo.rgb = pow(Albedo, 2.2);
 
@@ -139,7 +139,7 @@ float4 main(PS_INPUT input) : SV_Target
         Ambient = (diffuseIBL + specularIBL) * AmbientOcclusion;
     }
 
-    float3 directLighting;
+    float3 directLighting = {0.f, 0.f, 0.f};
 
     float currentShadowDepth = input.PosShadow.z / input.PosShadow.w;
     float2 uv = input.PosShadow.xy / input.PosShadow.w;

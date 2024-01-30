@@ -134,18 +134,22 @@ public:
 	/// 잡다한거 (나중에 지워도 될 것들)
 	const float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-	DirectX::XMVECTOR m_eye;
+	/*DirectX::XMVECTOR m_eye;
 	DirectX::XMVECTOR m_at;
-	DirectX::XMVECTOR m_up;
+	DirectX::XMVECTOR m_up;*/
 
-	/*Vector3 m_eye;
+	Vector3 m_eye;
 	Vector3 m_at;
-	Vector3 m_up;*/
+	Vector3 m_up;
 
 	float m_roll = 0.0f;
 	float m_pitch = 0.0f;
 	float m_yaw = 0.0f;
 	float m_scale = 1.0f;
+
+	float m_camRoll = 0.0f;
+	float m_camPitch = 0.0f;
+	float m_camYaw = 0.0f;
 
 	bool m_UseIBL = true;
 

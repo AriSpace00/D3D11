@@ -396,20 +396,20 @@ void D3DRenderManager::RenderImGUI()
 	/// Camera Properties
 	{
 		ImGui::Begin("Camera Properties");
-		ImGui::Text("World Transform");
+
 		float x = DirectX::XMVectorGetX(m_eye);
 		float y = DirectX::XMVectorGetY(m_eye);
 		float z = DirectX::XMVectorGetZ(m_eye);
-
+		ImGui::Text("Position");
 		ImGui::Text("X");
 		ImGui::SameLine();
-		ImGui::SliderFloat("##cwx", &x, -1000.0f, 10000.0f);
+		ImGui::SliderFloat("##cpx", &x, -1000.f, 10000.f);
 		ImGui::Text("Y");
 		ImGui::SameLine();
-		ImGui::SliderFloat("##cwy", &y, -1000.0f, 10000.0f);
+		ImGui::SliderFloat("##cpy", &y, -1000.f, 10000.f);
 		ImGui::Text("Z");
 		ImGui::SameLine();
-		ImGui::SliderFloat("##cwz", &z, -10000.0f, 0.0f);
+		ImGui::SliderFloat("##cpz", &z, -1000.f, 10000.f);
 		m_eye = DirectX::XMVectorSet(x, y, z, 0.0f);
 
 		/*m_at = m_eye + -m_eye.Forward;
@@ -417,6 +417,25 @@ void D3DRenderManager::RenderImGUI()
 
 		m_transform.ViewMatrix = DirectX::XMMatrixLookToLH(m_eye, m_at, m_up);
 		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);
+
+		/*ImGui::Text("Rotation");
+		ImGui::Text("X");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##crx", &m_camRoll, -360.f, 360.f);
+		ImGui::Text("Y");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##cry", &m_camPitch, -360.f, 360.f);
+		ImGui::Text("Z");
+		ImGui::SameLine();
+		ImGui::SliderFloat("##crz", &m_camYaw, -360.f, 360.f);
+		Matrix rotation = DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(m_camPitch),
+			DirectX::XMConvertToRadians(m_camYaw),
+			DirectX::XMConvertToRadians(m_camRoll));
+
+		m_transform.ViewMatrix *= rotation;
+		m_transform.ViewMatrix = DirectX::XMMatrixTranspose(m_transform.ViewMatrix);*/
+
 		m_light.EyePosition = m_eye;
 		ImGui::End();
 	}
