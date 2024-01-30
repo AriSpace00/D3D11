@@ -136,9 +136,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	descDepth.SampleDesc.Count = 1;
 	descDepth.SampleDesc.Quality = 0;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-	m_device->CreateTexture2D(&descDepth, nullptr, &m_shadowMap);
+	m_device->CreateTexture2D(&descDepth, nullptr, m_shadowMap.GetAddressOf());
 
 	descDSV = {};
 	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
@@ -146,7 +144,7 @@ bool D3DRenderManager::Initialize(HWND hWnd, UINT width, UINT height)
 	m_device->CreateDepthStencilView(m_shadowMap.Get(), &descDSV, m_shadowMapDSV.GetAddressOf());
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = descDSV.Format;
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	m_device->CreateShaderResourceView(m_shadowMap.Get(), &srvDesc, m_shadowMapSRV.GetAddressOf());
@@ -473,6 +471,7 @@ void D3DRenderManager::RenderImGUI()
 		std::string systemMemoryInfo;
 		GetSystemMemoryInfo(systemMemoryInfo);
 		ImGui::Text("System Memory : %s", systemMemoryInfo.c_str());
+		ImGui::Image(m_shadowMapSRV.Get(), ImVec2(256, 256));
 		ImGui::End();
 	}
 
